@@ -1,6 +1,8 @@
 <?php
 // core/database.php
-session_start(); // Start session early
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+} // Start session early
 
 $config = require __DIR__ . '/../config/database.php';
 

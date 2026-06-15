@@ -1,15 +1,18 @@
 <?php
+session_start();
+// require_once "../core/session.php";
 require_once "../core/auth.php";
 require_once "../core/wallet.php";
 require_once "../core/plans.php";
-require_once "../core/mining.php";
+//require_once "../core/mining.php";
 
 if (!isLoggedIn()) {
     header("Location: login.php");
     exit;
 }
 
-$user_id = Session::get('user_id');
+//$user_id = Session::get('user_id');
+$user_id = $_SESSION['user_id'] ?? null;
 $user = getUser($user_id);
 $wallet = getWallet($user_id);
 $plans = getActivePlans();
@@ -55,16 +58,26 @@ $plans = getActivePlans();
         </div>
 
         <!-- Plans -->
-        <div class="card p-8 rounded-3xl">
-            <h2 class="text-2xl mb-6">Stone Plans</h2>
-            <?php foreach ($plans as $p): ?>
-            <div class="p-4 border border-gray-700 rounded-2xl mb-4">
-                <div class="font-semibold"><?= htmlspecialchars($p['name']) ?></div>
-                <div class="text-2xl font-bold text-emerald-400">₦<?= number_format($p['price']) ?></div>
-                <div class="text-sm text-gray-400"><?= $p['yield_rate'] ?>% daily • <?= $p['duration_days'] ?> days</div>
-            </div>
-            <?php endforeach; ?>
+        <!-- Plans -->
+<div class="card p-8 rounded-3xl">
+    <h2 class="text-2xl mb-6">Stone Plans</h2>
+    <?php foreach ($plans as $p): ?>
+    <div class="p-4 border border-gray-700 rounded-2xl mb-4">
+        <div class="font-semibold"><?= htmlspecialchars($p['name']) ?></div>
+        <div class="text-sm text-gray-400">
+            ₦<?= number_format($p['min_amount']) ?> 
+            <?php if ($p['max_amount']): ?>
+                - ₦<?= number_format($p['max_amount']) ?>
+            <?php else: ?>
+                +
+            <?php endif; ?>
         </div>
+        <div class="text-sm text-gray-400">
+            <?= $p['daily_rate'] ?>% daily • <?= $p['duration_days'] ?> days
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>
     </div>
 </div>
 

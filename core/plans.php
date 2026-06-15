@@ -1,5 +1,5 @@
 <?php
-
+// core/plans.php
 require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/wallet.php';
 
@@ -10,12 +10,7 @@ function getPlan($id)
 {
     global $pdo;
 
-    $stmt = $pdo->prepare("
-        SELECT *
-        FROM plans
-        WHERE id = ?
-    ");
-
+    $stmt = $pdo->prepare("SELECT * FROM plans WHERE id = ?");
     $stmt->execute([$id]);
 
     return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -29,10 +24,9 @@ function getActivePlans()
     global $pdo;
 
     $stmt = $pdo->query("
-        SELECT *
-        FROM plans
-        WHERE status = 'active'
-        ORDER BY price ASC
+        SELECT * FROM plans 
+        WHERE status = 'active' 
+        ORDER BY min_amount ASC
     ");
 
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -49,34 +43,13 @@ function canPurchasePlan($plan_id)
         return false;
     }
 
-    // Unlimited purchase
-    if ((int)$plan['purchase_limit'] === 0) {
-        return true;
-    }
-
-    return $plan['total_purchased'] < $plan['purchase_limit'];
-}
-
-/**
- * Increment purchase count
- */
-function incrementPlanPurchase($plan_id)
-{
-    global $pdo;
-
-    $stmt = $pdo->prepare("
-        UPDATE plans
-        SET total_purchased = total_purchased + 1
-        WHERE id = ?
-    ");
-
-    return $stmt->execute([$plan_id]);
+    return true;
 }
 
 /**
  * Purchase and activate a plan
  */
-function purchasePlan($user_id, $plan_id)
+function purchasePlan($user_id, $plan_id, $amount)
 {
     global $pdo;
 
@@ -89,36 +62,36 @@ function purchasePlan($user_id, $plan_id)
         ];
     }
 
-    if (!canPurchasePlan($plan_id)) {
+    // Validate amount is within plan range
+    if ($amount < $plan['min_amount']) {
         return [
             'status' => false,
-            'message' => 'Plan limit reached'
+            'message' => 'Amount is below the minimum for this plan'
+        ];
+    }
+
+    if ($plan['max_amount'] !== null && $amount > $plan['max_amount']) {
+        return [
+            'status' => false,
+            'message' => 'Amount exceeds the maximum for this plan'
         ];
     }
 
     $wallet = getWallet($user_id);
 
-    if (!$wallet || $wallet['balance'] < $plan['price']) {
+    if (!$wallet || $wallet['balance'] < $amount) {
         return [
             'status' => false,
             'message' => 'Insufficient wallet balance'
         ];
     }
 
-    $dailyReward = (
-        $plan['price'] * $plan['yield_rate']
-    ) / 100;
+    $dailyReward = ($amount * $plan['daily_rate']) / 100;
 
     $pdo->beginTransaction();
 
     try {
-
-        debitWallet(
-            $user_id,
-            $plan['price'],
-            'plan_purchase',
-            'Purchased ' . $plan['name']
-        );
+        debitWallet($user_id, $amount);
 
         $stmt = $pdo->prepare("
             INSERT INTO user_mining (
@@ -134,12 +107,10 @@ function purchasePlan($user_id, $plan_id)
         $stmt->execute([
             $user_id,
             $plan_id,
-            $plan['price'],
+            $amount,
             $dailyReward,
             $plan['duration_days']
         ]);
-
-        incrementPlanPurchase($plan_id);
 
         $pdo->commit();
 
@@ -149,12 +120,10 @@ function purchasePlan($user_id, $plan_id)
         ];
 
     } catch (Exception $e) {
-
         $pdo->rollBack();
-
         return [
             'status' => false,
-            'message' => 'Activation failed'
+            'message' => 'Activation failed: ' . $e->getMessage()
         ];
     }
 }

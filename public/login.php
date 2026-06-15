@@ -20,10 +20,15 @@ if ($_POST) {
     } else {
         $user = loginUser($identifier, $password);
 
-        if ($user) {
-            header("Location: dashboard.php");
-            exit;
-        }
+        //$user = loginUser($email, $password);
+if ($user) {
+    if ($user['is_admin'] == 1) {
+        header("Location: admin/index.php");
+    } else {
+        header("Location: dashboard.php");
+    }
+    exit;
+}
 
         $error = "Invalid email/phone or password.";
     }

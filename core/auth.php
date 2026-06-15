@@ -1,104 +1,47 @@
 <?php
+// core/auth.php - User & Admin authentication
+require_once __DIR__ . '/../config/database.php';
 
-require_once __DIR__ . "/database.php";
-require_once __DIR__ . "/helpers.php";
-require_once __DIR__ . "/session.php";
-
-/**
- * REGISTER USER
- */
-function registerUser($data) {
+function loginUser($email, $password) {
     global $pdo;
-
-    $sql = "INSERT INTO users 
-    (username, email, phone, password, pin, 
-    secret_q1, secret_a1, secret_q2, secret_a2, secret_q3, secret_a3)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    $stmt = $pdo->prepare($sql);
-
-    return $stmt->execute([
-        clean($data['username']),
-        clean($data['email']),
-        clean($data['phone']),
-        password_hash($data['password'], PASSWORD_BCRYPT),
-        password_hash($data['pin'], PASSWORD_BCRYPT),
-
-        $data['q1'], $data['a1'],
-        $data['q2'], $data['a2'],
-        $data['q3'], $data['a3']
-    ]);
-}
-
-/**
- * LOGIN USER
- */
-function loginUser($identifier, $password) {
-    global $pdo;
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? OR phone = ? LIMIT 1");
-    $stmt->execute([$identifier, $identifier]);
-
+    
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user) return false;
-
-    if (!password_verify($password, $user['password'])) {
-        return false;
+    
+    if ($user && password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+        $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
+        return $user;
     }
-
-    // session
-    Session::set("user_id", $user['id']);
-    Session::set("username", $user['username']);
-    Session::set("role", $user['role']);
-
-    return $user;
+    return false;
 }
 
-/**
- * GET USER
- */
-function getUser($id) {
+function registerUser($username, $email, $phone, $password, $referred_by = null) {
     global $pdo;
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-    $stmt->execute([$id]);
-
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $hashed = password_hash($password, PASSWORD_DEFAULT);
+    $referral_code = strtoupper(substr(md5(uniqid()), 0, 8));
+    
+    $stmt = $pdo->prepare("INSERT INTO users 
+        (username, email, phone, password, referral_code, referred_by, is_admin) 
+        VALUES (?, ?, ?, ?, ?, ?, 0)");
+    $stmt->execute([$username, $email, $phone, $hashed, $referral_code, $referred_by]);
+    
+    $user_id = $pdo->lastInsertId();
+    
+    // Create wallet
+    $stmt = $pdo->prepare("INSERT INTO wallets (user_id) VALUES (?)");
+    $stmt->execute([$user_id]);
+    
+    return $user_id;
 }
 
-/**
- * GET USER BY EMAIL
- */
 function getUserByEmail($email) {
     global $pdo;
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
-    $stmt->execute([clean($email)]);
-
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->execute([$email]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
-
-/**
- * UPDATE USER PASSWORD
- */
-function updateUserPassword($id, $password) {
-    global $pdo;
-
-    $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
-    return $stmt->execute([password_hash($password, PASSWORD_BCRYPT), $id]);
-}
-
-/**
- * AUTH CHECK
- */
-function isLoggedIn() {
-    return Session::get("user_id") !== null;
-}
-
-/**
- * LOGOUT
- */
-function logoutUser() {
-    session_destroy();
-}
+?>

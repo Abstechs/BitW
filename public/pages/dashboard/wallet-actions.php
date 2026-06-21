@@ -21,7 +21,8 @@
     <div id="paystack-tab" class="payment-content">
         <form id="paystack-form" class="space-y-4">
             <label class="block text-sm text-slate-300">Fund amount (₦)</label>
-            <input class="form-field" type="number" step="0.01" id="paystack_amount" name="amount" placeholder="Enter amount to fund" required>
+            <input class="form-field" type="number" step="0.01" id="payamount" name="amount" placeholder="Enter amount to fund" required>
+            <input type="hidden" id="email-address" value="<?= htmlspecialchars($user['email'] ?? '') ?>">
             <button type="submit" class="action-button w-full">
                 <i class="bx bx-wallet"></i> Fund with Paystack
             </button>
@@ -96,6 +97,9 @@
 }
 </style>
 
+<!-- Paystack Inline JS -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
 <script>
 // Tab switching
 document.querySelectorAll('.payment-tab').forEach(tab => {
@@ -112,11 +116,95 @@ document.querySelectorAll('.payment-tab').forEach(tab => {
     });
 });
 
+// Handle Paystack payment callback
+function handlePaymentCallback(response) {
+    const postData = {
+        ded_amount: document.getElementById("payamount").value,
+        type: 'fund',
+        ref: response.reference,
+        mail: document.getElementById("email-address").value
+    };
+
+    // Show loading alert
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Payment Processing',
+            text: 'Please wait, your request is processing...',
+            icon: 'info',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            didOpen: function() {
+                Swal.showLoading();
+            }
+        });
+    }
+
+    // Send to verification endpoint
+    fetch('../api/paystack-verify.php?reference=' + response.reference, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (typeof Swal !== 'undefined') {
+            Swal.close();
+        }
+
+        if (data.status) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Your wallet has been funded successfully. New balance: ₦' + (data.new_balance ? data.new_balance : 'updated'),
+                    icon: 'success',
+                    timer: 3000,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.location.reload();
+                });
+            } else {
+                alert('Payment successful! Your wallet has been funded.');
+                window.location.reload();
+            }
+        } else {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'An error occurred. Please try again.',
+                    icon: 'error'
+                });
+            } else {
+                alert('Error: ' + (data.message || 'Payment verification failed'));
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Error',
+                text: 'An error occurred while processing payment',
+                icon: 'error'
+            });
+        } else {
+            alert('An error occurred. Please try again.');
+        }
+    });
+}
+
 // Paystack form submission
 document.getElementById('paystack-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const amount = document.getElementById('paystack_amount').value;
+    const amount = document.getElementById('payamount').value;
+
+    if (!amount || amount <= 0) {
+        alert('Please enter a valid amount');
+        return;
+    }
+
     const button = this.querySelector('button');
     button.disabled = true;
     button.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i> Processing...';
@@ -126,6 +214,7 @@ document.getElementById('paystack-form').addEventListener('submit', async functi
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: 'amount=' + encodeURIComponent(amount)
         });
@@ -133,7 +222,22 @@ document.getElementById('paystack-form').addEventListener('submit', async functi
         const data = await response.json();
 
         if (data.status) {
-            window.location.href = data.authorization_url;
+            // Initialize Paystack
+            const handler = PaystackPop.setup({
+                key: '<?= htmlspecialchars($settings['PAYSTACK_PUBLIC'] ?? '') ?>',
+                email: document.getElementById('email-address').value,
+                amount: Math.round(amount * 100),
+                ref: data.reference,
+                onClose: function() {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="bx bx-wallet"></i> Fund with Paystack';
+                    alert('Window closed.');
+                },
+                onSuccess: function(transaction) {
+                    handlePaymentCallback(transaction);
+                }
+            });
+            handler.openIframe();
         } else {
             alert('Error: ' + (data.message || 'Failed to initialize payment'));
             button.disabled = false;
@@ -159,13 +263,26 @@ document.getElementById('manual-form').addEventListener('submit', async function
     try {
         const response = await fetch('../api/manual-deposit.php', {
             method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             body: formData
         });
 
         const data = await response.json();
 
         if (data.status) {
-            alert(data.message);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Success!',
+                    text: data.message,
+                    icon: 'success',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            } else {
+                alert(data.message);
+            }
             this.reset();
             button.disabled = false;
             button.innerHTML = '<i class="bx bx-upload"></i> Submit for Approval';

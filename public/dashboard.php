@@ -16,21 +16,10 @@ $user_id = $_SESSION['user_id'] ?? null;
 $user = getUser($user_id);
 $wallet = getWallet($user_id);
 $plans = getActivePlans();
+
+$pageTitle = 'Dashboard - BitW';
+require_once "./pages/header.php";
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - BitW</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background: linear-gradient(to bottom, #0a0f1c, #02040a); color: #e0f0ff; font-family: system-ui; }
-        .card { background: rgba(17, 24, 39, 0.95); border: 1px solid #374151; }
-    </style>
-</head>
-<body class="min-h-screen p-8">
-<div class="max-w-6xl mx-auto">
     <div class="flex justify-between items-center mb-10">
         <div>
             <h1 class="text-4xl font-bold tracking-tight">BitW Dashboard</h1>
@@ -87,5 +76,4 @@ function claimReward() {
     // TODO: AJAX to mining endpoint
 }
 </script>
-</body>
-</html>
+<?php require_once "./pages/footer.php"; ?>

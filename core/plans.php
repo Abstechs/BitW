@@ -35,7 +35,20 @@ function getActivePlans()
 /**
  * Check if plan can still be purchased
  */
-function canPurchasePlan($plan_id)
+function countUserPlanPurchases($user_id, $plan_id)
+{
+    global $pdo;
+
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM user_mining WHERE user_id = ? AND plan_id = ?");
+    $stmt->execute([$user_id, $plan_id]);
+
+    return intval($stmt->fetchColumn());
+}
+
+/**
+ * Check if plan can still be purchased
+ */
+function canPurchasePlan($user_id, $plan_id)
 {
     $plan = getPlan($plan_id);
 
@@ -43,7 +56,10 @@ function canPurchasePlan($plan_id)
         return false;
     }
 
-    return true;
+    $attempts = countUserPlanPurchases($user_id, $plan_id);
+    $limit = intval($plan['max_purchase_attempts'] ?? 1);
+
+    return $attempts < max(1, $limit);
 }
 
 /**
@@ -86,24 +102,24 @@ function purchasePlan($user_id, $plan_id, $amount)
         ];
     }
 
+    $attempts = countUserPlanPurchases($user_id, $plan_id);
+    $limit = intval($plan['max_purchase_attempts'] ?? 1);
+
+    if ($attempts >= max(1, $limit)) {
+        return [
+            'status' => false,
+            'message' => 'Purchase limit reached for this plan. Please upgrade to a higher plan.'
+        ];
+    }
+
     $dailyReward = ($amount * $plan['daily_rate']) / 100;
 
     $pdo->beginTransaction();
 
     try {
-        debitWallet($user_id, $amount);
+        debitWallet($user_id, $amount, 'investment', 'Plan purchase');
 
-        $stmt = $pdo->prepare("
-            INSERT INTO user_mining (
-                user_id,
-                plan_id,
-                purchase_amount,
-                daily_reward,
-                duration_days
-            )
-            VALUES (?, ?, ?, ?, ?)
-        ");
-
+        $stmt = $pdo->prepare("INSERT INTO user_mining (user_id, plan_id, amount, daily_earnings, total_earned, duration_days, start_date, status) VALUES (?, ?, ?, ?, 0.00, ?, CURDATE(), 'active')");
         $stmt->execute([
             $user_id,
             $plan_id,

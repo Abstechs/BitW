@@ -22,6 +22,15 @@ $activeMinings = getActiveMinings($user_id);
 
 $messages = [];
 $minWithdrawal = AppConfig::get('MIN_WITHDRAWAL') ?: 1000;
+$settings = include __DIR__ . '/../config/settings.php';
+
+// Display payment success/error messages from query params
+if (isset($_GET['success'])) {
+    $messages[] = ['type' => 'success', 'text' => htmlspecialchars($_GET['success'])];
+}
+if (isset($_GET['error'])) {
+    $messages[] = ['type' => 'error', 'text' => htmlspecialchars($_GET['error'])];
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dashboard_action'])) {
     $action = $_POST['dashboard_action'];
@@ -29,11 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['dashboard_action'])) 
 
     if ($amount <= 0) {
         $messages[] = ['type' => 'error', 'text' => 'Enter a valid amount to continue.'];
-    } elseif ($action === 'fund') {
-        creditWallet($user_id, $amount, 'deposit', 'Dashboard funding');
-        $wallet = getWallet($user_id);
-        $transactions = getTransactions($user_id);
-        $messages[] = ['type' => 'success', 'text' => 'Your wallet has been funded successfully.'];
     } elseif ($action === 'withdraw') {
         if ($amount < $minWithdrawal) {
             $messages[] = ['type' => 'error', 'text' => 'Withdrawals must be at least ₦'.number_format($minWithdrawal, 2).'.'];

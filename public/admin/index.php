@@ -1,43 +1,36 @@
 <?php
-// public/admin/index.php
-session_start();
-require_once __DIR__ . '/../../core/database.php';
-require_once __DIR__ . '/../../core/auth.php';
-
-if (!isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
-    header("Location: ../login.php");
-    exit;
-}
+require_once __DIR__ . '/includes/admin_init.php';
+require_once __DIR__ . '/includes/admin_header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>BitW Admin Dashboard</title>
-    <!-- Tailwind CDN or your existing styles -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-900 text-white">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-64 bg-black p-4">
-            <h1 class="text-2xl font-bold mb-8">BitW Admin</h1>
-            <nav>
-                <a href="index.php" class="block py-2 px-4 bg-gray-800 rounded">Dashboard</a>
-                <a href="users.php" class="block py-2 px-4 hover:bg-gray-800">Users</a>
-                <a href="plans.php" class="block py-2 px-4 hover:bg-gray-800">Plans</a>
-                <a href="mining.php" class="block py-2 px-4 hover:bg-gray-800">Mining</a>
-                <a href="referrals.php" class="block py-2 px-4 hover:bg-gray-800">Referrals</a>
-                <a href="transactions.php" class="block py-2 px-4 hover:bg-gray-800">Transactions</a>
-            </nav>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="flex-1 p-8 overflow-auto">
-            <h2 class="text-3xl font-bold mb-6">Admin Overview</h2>
-            <p>Welcome, Admin! System management panel is ready.</p>
-            <!-- Stats cards, recent activity etc. will go here -->
+<div class="admin-top">
+    <div>
+        <span class="badge">Admin Overview</span>
+        <h2 class="text-3xl font-bold mt-4">Welcome back, admin</h2>
+        <p class="text-slate-400 mt-2">Monitor the platform, review activity, and manage plans from one place.</p>
+    </div>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+    <div class="admin-card">
+        <h3 class="text-xl font-semibold mb-3">Quick actions</h3>
+        <div class="space-y-3">
+            <a href="plans.php" class="btn-secondary w-full">Manage Stone Plans</a>
+            <a href="transactions.php" class="btn-secondary w-full">View Transactions</a>
+            <a href="users.php" class="btn-secondary w-full">Manage Users</a>
         </div>
     </div>
-</body>
-</html>
+    <div class="admin-card">
+        <h3 class="text-xl font-semibold mb-3">Status</h3>
+        <p class="text-slate-400">This dashboard is ready for production plan management and can be extended with analytics panels.</p>
+    </div>
+    <div class="admin-card">
+        <h3 class="text-xl font-semibold mb-3">Stone plan count</h3>
+        <p class="text-4xl font-bold mt-4"><?php
+            $count = $pdo->query('SELECT COUNT(*) AS total FROM plans')->fetchColumn();
+            echo intval($count);
+        ?></p>
+    </div>
+</div>
+
+<?php
+require_once __DIR__ . '/includes/admin_footer.php';

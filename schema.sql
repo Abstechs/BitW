@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS plans (
     max_amount DECIMAL(15,2),
     daily_rate DECIMAL(5,2) NOT NULL,
     duration_days INT NOT NULL,
-    status ENUM('active', 'inactive') DEFAULT 'active'
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    image VARCHAR(255) DEFAULT NULL
 );
 
 -- User Mining / Investments

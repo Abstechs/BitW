@@ -49,7 +49,8 @@ CREATE TABLE `plans` (
   `max_amount` decimal(15,2) DEFAULT NULL,
   `daily_rate` decimal(5,2) NOT NULL,
   `duration_days` int NOT NULL,
-  `status` enum('active','inactive') DEFAULT 'active'
+  `status` enum('active','inactive') DEFAULT 'active',
+  `image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --

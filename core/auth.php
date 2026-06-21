@@ -2,12 +2,12 @@
 // core/auth.php
 require_once __DIR__ . '/database.php';
 
-function loginUser($email, $password) {
+function loginUser($identifier, $password) {
     global $pdo;
     
     try {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
-        $stmt->execute([$email]);
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? OR phone = ? LIMIT 1");
+        $stmt->execute([$identifier, $identifier]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user && password_verify($password, $user['password'])) {
@@ -74,6 +74,32 @@ function getUser($user_id) {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
         error_log("GetUser Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function getUserByEmail($email) {
+    global $pdo;
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log("GetUserByEmail Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function updateUserPassword($user_id, $password) {
+    global $pdo;
+
+    try {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+        return $stmt->execute([$hashedPassword, $user_id]);
+    } catch (Exception $e) {
+        error_log("UpdateUserPassword Error: " . $e->getMessage());
         return false;
     }
 }

@@ -4,7 +4,7 @@
             <h2>Stone plans</h2>
             <p class="text-sm text-slate-400 mt-1">Browse current investment stones and your active mining sessions.</p>
         </div>
-        <a class="dashboard-link" href="#stones"><i class="bx bx-diamond"></i> Explore stones</a>
+        <a class="dashboard-link" href="plans.php"><i class="bx bx-diamond"></i> See all plans</a>
     </div>
 
     <div class="plan-grid">

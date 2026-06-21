@@ -2,6 +2,7 @@
 
 require_once "../core/auth.php";
 require_once "../core/config.php";
+require_once "../core/helpers.php";
 require_once "../core/ui.php";
 
 $title = AppConfig::get("APP_ALIAS") . " Reset Password";
@@ -51,9 +52,9 @@ if ($_POST) {
                 $answer2 = trim($_POST['a2'] ?? '');
                 $answer3 = trim($_POST['a3'] ?? '');
 
-                if (strcasecmp($answer1, $user['secret_a1']) !== 0 ||
-                    strcasecmp($answer2, $user['secret_a2']) !== 0 ||
-                    strcasecmp($answer3, $user['secret_a3']) !== 0) {
+                if (strcasecmp($answer1, $user['a1']) !== 0 ||
+                    strcasecmp($answer2, $user['a2']) !== 0 ||
+                    strcasecmp($answer3, $user['a3']) !== 0) {
                     $error = "One or more security answers are incorrect.";
                     $step = 2;
                 } else {
@@ -112,17 +113,19 @@ if ($_POST) {
                 <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']) ?>">
 
                 <div class="mb-2">
-                    <label class="form-label text-light"><?= htmlspecialchars($user['secret_q1']) ?></label>
+                    <label class="form-label text-light"><?= htmlspecialchars($user['q1']) ?></label>
                     <input name="a1" class="form-control" placeholder="Answer">
                 </div>
                 <div class="mb-2">
-                    <label class="form-label text-light"><?= htmlspecialchars($user['secret_q2']) ?></label>
+                    <label class="form-label text-light"><?= htmlspecialchars($user['q2']) ?></label>
                     <input name="a2" class="form-control" placeholder="Answer">
                 </div>
                 <div class="mb-2">
-                    <label class="form-label text-light"><?= htmlspecialchars($user['secret_q3']) ?></label>
+                    <label class="form-label text-light"><?= htmlspecialchars($user['q3']) ?></label>
                     <input name="a3" class="form-control" placeholder="Answer">
                 </div>
+
+                <p class="text-light small mb-3">Use the exact answer you set during registration for each security question. Keep your new password safe for next time.</p>
 
                 <input name="password" type="password" class="form-control mb-2" placeholder="New Password">
                 <input name="confirm_password" type="password" class="form-control mb-3" placeholder="Confirm Password">

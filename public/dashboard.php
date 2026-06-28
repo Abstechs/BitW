@@ -124,7 +124,7 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
 // ========================================================
 // SIMPLE RANK DISPLAY TOGGLE SWITCH
 // ========================================================
-$useRankName = true; // TRUE = Shows Rank Name ("Builder"), FALSE = Shows Rank Level ("Level 1")
+$useRankName = true; 
 
 if ($useRankName) {
     global $pdo;
@@ -147,6 +147,10 @@ if ($useRankName) {
     <title><?= htmlspecialchars($dashboardConfig['TITLE_PREFIX'] ?? 'Dashboard') ?> - <?= htmlspecialchars($appName) ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
     <style>
         .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); }
         #sidebar { transition: transform 0.3s ease; }
@@ -156,12 +160,40 @@ if ($useRankName) {
         @media (max-width: 768px) {
             #sidebar { width: 60vw; max-width: 240px; }
         }
+        
+        .toastify-custom-success {
+            background: linear-gradient(135deg, #059669, #10b981) !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+        }
+        .toastify-custom-error {
+            background: linear-gradient(135deg, #dc2626, #f87171) !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+        }
     </style>
 </head>
 <body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
-    <!-- ==================== MOBILE TOPBAR ==================== -->
-    <header class="hidden md:block lg:block"></header>
+    <!-- ==================== CUSTOM CONFIRMATION MODAL ==================== -->
+    <div id="confirmModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-all duration-300">
+        <div class="glass border border-gray-700 max-w-sm w-full p-6 rounded-3xl shadow-2xl transform scale-95 transition-all duration-300">
+            <div class="flex items-center gap-3 text-yellow-400 mb-4">
+                <i class="fas fa-exclamation-circle text-2xl"></i>
+                <h3 class="text-xl font-bold">Confirm Action</h3>
+            </div>
+            <p id="confirmModalMessage" class="text-gray-300 text-sm leading-relaxed mb-6"></p>
+            <div class="flex items-center justify-end gap-3">
+                <button id="confirmCancelBtn" class="px-5 py-2.5 bg-gray-800 hover:bg-gray-700 text-sm rounded-xl transition font-medium">
+                    Cancel
+                </button>
+                <button id="confirmProceedBtn" class="px-5 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-black text-sm rounded-xl transition font-semibold">
+                    Yes, Proceed
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- =================================================================== -->
 
     <div id="sidebar" class="w-72 bg-black h-screen fixed top-0 left-0 p-6 z-50 md:block lg:block hidden">
         <div class="flex items-center gap-3 mb-10">
@@ -188,20 +220,18 @@ if ($useRankName) {
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 p-8 md:ml-72 lg:ml-72">
-        <!-- Header (welcome + rank + logout) -->
+        <!-- Header -->
         <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
             <h1 class="text-3xl font-bold mb-4 md:mb-0">
                 <?= htmlspecialchars($welcomePrefix) ?>, <?= htmlspecialchars($user['username']) ?> 👋
             </h1>
             <div class="flex flex-col md:flex-row md:items-center md:space-x-6">
-                <!-- Rank Config Switch Integration -->
                 <div class="text-center md:text-right">
                     <p class="text-sm text-gray-400"><?= htmlspecialchars($rankLabel) ?></p>
                     <p class="text-xl font-semibold text-yellow-400">
                         <?= htmlspecialchars($displayRank) ?>
                     </p>
                 </div>
-                <!-- Logout button -->
                 <button onclick="logout()" class="mt-3 md:mt-0 px-6 py-2 bg-red-600 hover:bg-red-700 rounded-xl">
                     <?= htmlspecialchars($logoutText) ?>
                 </button>
@@ -269,7 +299,7 @@ if ($useRankName) {
                                 <?= htmlspecialchars($currencySymbol) ?><?= number_format($mining['daily_earning'] ?? 0, 2) ?>
                             </p>
                         </div>
-                        <button onclick="claimMining(<?= (int) $mining['id'] ?>)" class="mt-3 md:mt-0 self-align-end px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-2xl">
+                        <button onclick="askClaimConfirmation(<?= (int) $mining['id'] ?>)" class="mt-3 md:mt-0 self-align-end px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-2xl">
                             <?= htmlspecialchars($claimText) ?>
                         </button>
                     </div>
@@ -300,6 +330,9 @@ if ($useRankName) {
         </div>
     </main>
 
+    <!-- Toastify JavaScript -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <script>
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.getElementById('menuToggle');
@@ -312,27 +345,83 @@ if ($useRankName) {
             });
         }
 
-        function claimMining(miningId) {
-            const claimConfirmMessage = <?= json_encode($claimConfirmMessage) ?>;
+        function showToastNotification(text, type = 'success') {
+            let className = "toastify-custom-success";
+            if (type === 'error') className = "toastify-custom-error";
+
+            Toastify({
+                text: text,
+                duration: 3500,
+                close: true,
+                gravity: "top", 
+                position: "right",
+                className: className,
+                stopOnFocus: true
+            }).showToast();
+        }
+
+        // ========================================================
+        // ELEGANT CUSTOM MODAL DISPATCH SYSTEM
+        // ========================================================
+        let activeMiningIdToClaim = null;
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalMessage = document.getElementById('confirmModalMessage');
+        const confirmProceedBtn = document.getElementById('confirmProceedBtn');
+        const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+
+        function askClaimConfirmation(miningId) {
+            activeMiningIdToClaim = miningId;
+            confirmModalMessage.textContent = <?= json_encode($claimConfirmMessage) ?>;
+            
+            // Show modal cleanly with styles
+            confirmModal.classList.remove('hidden');
+            setTimeout(() => {
+                confirmModal.classList.remove('opacity-0');
+                confirmModal.querySelector('.glass').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeConfirmationModal() {
+            confirmModal.classList.add('opacity-0');
+            confirmModal.querySelector('.glass').classList.add('scale-95');
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+                activeMiningIdToClaim = null;
+            }, 300);
+        }
+
+        confirmCancelBtn.addEventListener('click', closeConfirmationModal);
+
+        confirmProceedBtn.addEventListener('click', () => {
+            if (!activeMiningIdToClaim) return;
+            
+            const currentId = activeMiningIdToClaim;
+            closeConfirmationModal();
+
             const claimSuccessMessage = <?= json_encode($claimSuccessMessage) ?>;
             const claimFailedMessage = <?= json_encode($claimFailedMessage) ?>;
 
-            if (confirm(claimConfirmMessage)) {
-                fetch('api/claim.php', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({mining_id: miningId})
-                })
-                .then(r => r.json())
-                .then(data => {
-                    const message = data.message || (data.success ? claimSuccessMessage : claimFailedMessage);
-                    alert(message);
-                    if (data.success) {
+            fetch('api/claim.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({mining_id: currentId})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToastNotification(data.message || claimSuccessMessage, 'success');
+                    setTimeout(() => {
                         location.reload();
-                    }
-                });
-            }
-        }
+                    }, 1500);
+                } else {
+                    showToastNotification(data.message || claimFailedMessage, 'error');
+                }
+            })
+            .catch(error => {
+                showToastNotification('An error occurred during communication.', 'error');
+            });
+        });
+        // ========================================================
 
         function logout() {
             window.location.href = 'logout.php';

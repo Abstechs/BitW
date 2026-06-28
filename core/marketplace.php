@@ -35,9 +35,22 @@ function addToWishlist($user_id, $plan_id) {
     return ['success' => true, 'message' => 'Stone added to wishlist'];
 }
 
+function removeFromWishlist($user_id, $plan_id) {
+    global $pdo;
+    $stmt = $pdo->prepare("DELETE FROM wishlists WHERE user_id = ? AND plan_id = ?");
+    $stmt->execute([$user_id, $plan_id]);
+    addNotification($user_id, 'Stone removed from wishlist', 'The stone has been removed.');
+    return ['success' => true, 'message' => 'Stone removed from wishlist'];
+}
+
 function getWishlist($user_id) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT w.*, p.name, p.image, p.daily_rate, p.duration_days, p.min_amount, p.max_amount FROM wishlists w JOIN plans p ON p.id = w.plan_id WHERE w.user_id = ? ORDER BY w.created_at DESC");
+    // Explicitly renaming columns to prevent collisions
+    $stmt = $pdo->prepare("SELECT w.id AS wishlist_row_id, w.plan_id, p.id AS plan_id, p.name, p.image, p.daily_rate, p.duration_days, p.min_amount, p.max_amount 
+                          FROM wishlists w 
+                          JOIN plans p ON p.id = w.plan_id 
+                          WHERE w.user_id = ? 
+                          ORDER BY w.created_at DESC");
     $stmt->execute([$user_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }

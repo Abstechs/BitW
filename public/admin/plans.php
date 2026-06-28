@@ -40,14 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($errors)) {
             $imagePath = null;
             if ($image && $image['error'] === UPLOAD_ERR_OK) {
-                $targetDir = __DIR__ . '/../../assets/images/plans/';
+                // Fixed target absolute path matching your directory layouts
+                $targetDir = __DIR__ . '/../assets/images/plans/';
                 if (!is_dir($targetDir)) {
                     mkdir($targetDir, 0755, true);
                 }
                 $extension = pathinfo($image['name'], PATHINFO_EXTENSION);
                 $filename = uniqid('plan_') . '.' . $extension;
                 move_uploaded_file($image['tmp_name'], $targetDir . $filename);
-                $imagePath = '/assets/images/plans/' . $filename;
+                $imagePath = 'assets/images/plans/' . $filename;
             }
 
             if ($action === 'create') {
@@ -166,7 +167,7 @@ require_once __DIR__ . '/includes/admin_header.php';
                 <label class="form-label">Plan image</label>
                 <input type="file" name="image" class="form-field">
                 <?php if (!empty($plan['image'])): ?>
-                    <img src="<?= htmlspecialchars($plan['image']) ?>" alt="Plan image" class="image-preview mt-3">
+                    <img src="../<?= htmlspecialchars($plan['image']) ?>" alt="Plan image" class="w-24 h-24 rounded-2xl object-cover mt-3 border border-gray-700 bg-gray-900">
                 <?php endif; ?>
             </div>
             <div class="flex gap-3">
@@ -179,34 +180,47 @@ require_once __DIR__ . '/includes/admin_header.php';
 
 <?php if ($action === 'list'): ?>
     <div class="admin-card">
-        <table class="table">
+        <table class="table w-full text-left border-collapse">
             <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Rate</th>
-                    <th>Duration</th>
-                    <th>Range</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                <tr class="border-b border-gray-800 text-gray-400 text-sm">
+                    <th class="pb-3 pl-2">Image</th>
+                    <th class="pb-3">Name</th>
+                    <th class="pb-3">Rate</th>
+                    <th class="pb-3">Duration</th>
+                    <th class="pb-3">Range</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3 text-right pr-2">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-900">
                 <?php foreach ($plans as $planItem): ?>
-                    <?php $planImage = !empty($planItem['image']) ? htmlspecialchars($planItem['image']) : htmlspecialchars($settings['DEFAULT_PLAN_IMAGE'] ?? '/assets/images/default-plan.svg'); ?>
-                    <tr>
-                        <td><img src="<?= $planImage ?>" class="image-preview" alt="Plan image"></td>
-                        <td><?= htmlspecialchars($planItem['name']) ?></td>
-                        <td><?= htmlspecialchars($planItem['daily_rate']) ?>%</td>
-                        <td><?= htmlspecialchars($planItem['duration_days']) ?> days</td>
-                        <td>
+                    <tr class="hover:bg-gray-900/40 transition">
+                        <td class="py-3 pl-2">
+                            <?php if (!empty($planItem['image'])): ?>
+                                <img src="../<?= htmlspecialchars($planItem['image']) ?>" class="w-12 h-12 rounded-xl object-cover border border-gray-800 bg-gray-900" alt="Plan image">
+                            <?php else: ?>
+                                <div class="w-12 h-12 rounded-xl border border-dashed border-gray-700 bg-gray-900/60 flex items-center justify-center text-yellow-500 text-lg">
+                                    <i class="fa-solid fa-gem"></i>
+                                </div>
+                            <?php endif; ?>
+                        </td>
+                        <td class="py-3 font-medium text-white"><?= htmlspecialchars($planItem['name']) ?></td>
+                        <td class="py-3 text-teal-400 font-semibold"><?= htmlspecialchars($planItem['daily_rate']) ?>%</td>
+                        <td class="py-3 text-gray-300"><?= htmlspecialchars($planItem['duration_days']) ?> days</td>
+                        <td class="py-3 text-gray-300 font-mono">
                             ₦<?= number_format($planItem['min_amount'], 2) ?>
                             <?= $planItem['max_amount'] ? '– ₦' . number_format($planItem['max_amount'], 2) : '+' ?>
                         </td>
-                        <td><?= htmlspecialchars(ucfirst($planItem['status'])) ?></td>
-                        <td>
-                            <a class="btn-secondary" href="plans.php?action=update&id=<?= $planItem['id'] ?>">Edit</a>
-                            <a class="btn-secondary" href="plans.php?action=delete&id=<?= $planItem['id'] ?>" onclick="return confirm('Delete this plan?');">Delete</a>
+                        <td class="py-3">
+                            <span class="px-2.5 py-1 text-xs rounded-full font-medium <?= $planItem['status'] === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' ?>">
+                                <?= htmlspecialchars(ucfirst($planItem['status'])) ?>
+                            </span>
+                        </td>
+                        <td class="py-3 text-right pr-2">
+                            <div class="inline-flex gap-2">
+                                <a class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-xs font-semibold rounded-lg transition" href="plans.php?action=update&id=<?= $planItem['id'] ?>">Edit</a>
+                                <a class="px-3 py-1.5 bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white text-xs font-semibold rounded-lg transition border border-rose-500/20" href="plans.php?action=delete&id=<?= $planItem['id'] ?>" onclick="return confirm('Delete this plan?');">Delete</a>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -215,4 +229,4 @@ require_once __DIR__ . '/includes/admin_header.php';
     </div>
 <?php endif; ?>
 
-<?php require_once __DIR__ . '/includes/admin_footer.php';
+<?php require_once __DIR__ . '/includes/admin_footer.php'; ?>

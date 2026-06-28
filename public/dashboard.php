@@ -55,7 +55,7 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['re
                 $amountPaid = $result['data']['amount'] / 100; // Convert kobo to Naira
                 $currentUserId = (int)$user['id']; 
 
-                // 3. Credit User 2's wallet directly
+                // 3. Credit User's wallet directly
                 $updateWallet = $pdo->prepare("UPDATE wallets SET balance = balance + ? WHERE user_id = ?");
                 $updateWallet->execute([$amountPaid, $currentUserId]);
 
@@ -91,7 +91,6 @@ $notifications = getNotifications($user['id'], 5);
 $appName = AppConfig::get('APP_NAME') ?: 'BitWealthBuilder';
 $appAlias = AppConfig::get('APP_ALIAS') ?: 'BitW';
 $dashboardConfig = AppConfig::get('DASHBOARD') ?: [];
-// ... Rest of your template code stays exactly the same
 
 $brand = $dashboardConfig['BRAND'] ?? $appAlias;
 $welcomePrefix = $dashboardConfig['WELCOME_PREFIX'] ?? 'Welcome back';
@@ -121,6 +120,23 @@ $navMining = $dashboardConfig['NAV_MINING'] ?? 'Mining';
 $navReferrals = $dashboardConfig['NAV_REFERRALS'] ?? 'Referrals';
 $navTransactions = $dashboardConfig['NAV_TRANSACTIONS'] ?? 'Transactions';
 $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
+
+// ========================================================
+// SIMPLE RANK DISPLAY TOGGLE SWITCH
+// ========================================================
+$useRankName = true; // TRUE = Shows Rank Name ("Builder"), FALSE = Shows Rank Level ("Level 1")
+
+if ($useRankName) {
+    global $pdo;
+    $userRankLevel = $user['rank_level'] ?? 1;
+    $rankQuery = $pdo->prepare("SELECT name FROM ranks WHERE level = ? LIMIT 1");
+    $rankQuery->execute([$userRankLevel]);
+    $rankRow = $rankQuery->fetch();
+    $displayRank = $rankRow['name'] ?? 'Novice';
+} else {
+    $displayRank = htmlspecialchars($rankLevelPrefix) . ' ' . ($user['rank_level'] ?? 1);
+}
+// ========================================================
 ?>
 
 <!DOCTYPE html>
@@ -133,16 +149,10 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); }
-        /* Optional: smooth sidebar transition */
         #sidebar { transition: transform 0.3s ease; }
         .sidebar-hidden { transform: translateX(-100%); }
-        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); }
-
-        /* Subtle iOS-like transitions */
         * { transition: all 0.2s ease; }
         .btn-transition:hover { opacity: 0.9; }
-
-        /* Fixed sidebar width for mobile */
         @media (max-width: 768px) {
             #sidebar { width: 60vw; max-width: 240px; }
         }
@@ -151,37 +161,27 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
 <body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
     <!-- ==================== MOBILE TOPBAR ==================== -->
-    <header class="hidden md:block lg:block">
-        <!-- Desktop version keeps the static sidebar (see later) -->
-    </header>
+    <header class="hidden md:block lg:block"></header>
 
-    <div id="sidebar"
-         class="w-72 bg-black h-screen fixed top-0 left-0 p-6 z-50 md:block lg:block hidden">
-        <!-- SIDEBAR CONTENT (same as before) -->
+    <div id="sidebar" class="w-72 bg-black h-screen fixed top-0 left-0 p-6 z-50 md:block lg:block hidden">
         <div class="flex items-center gap-3 mb-10">
             <h1 class="text-3xl font-bold text-yellow-400"><?= htmlspecialchars($brand) ?></h1>
         </div>
         <nav class="space-y-2">
-            <a href="dashboard.php"
-               class="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-xl"><i class="fas fa-home"></i> <?= htmlspecialchars($navDashboard) ?></a>
-            <a href="mining.php"
-               class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navMining) ?></a>
-            <a href="referrals.php"
-               class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-users"></i> <?= htmlspecialchars($navReferrals) ?></a>
-            <a href="transactions.php"
-               class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-history"></i> <?= htmlspecialchars($navTransactions) ?></a>
-            <a href="withdraw.php"
-               class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-money-bill"></i> <?= htmlspecialchars($navWithdraw) ?></a>
+            <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-xl"><i class="fas fa-home"></i> <?= htmlspecialchars($navDashboard) ?></a>
+            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navMining) ?></a>
+            <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-users"></i> <?= htmlspecialchars($navReferrals) ?></a>
+            <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-history"></i> <?= htmlspecialchars($navTransactions) ?></a>
+            <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-money-bill"></i> <?= htmlspecialchars($navWithdraw) ?></a>
         </nav>
     </div>
 
-    <!-- MOBILE HAMBURGER (visible only on <md) -->
+    <!-- MOBILE HAMBURGER -->
     <div class="md:hidden lg:hidden flex items-center justify-between p-4 bg-black z-50">
         <div class="flex items-center gap-3">
             <h1 class="text-2xl font-bold text-yellow-400"><?= htmlspecialchars($brand) ?></h1>
         </div>
-        <button id="menuToggle"
-                class="p-2 text-yellow-400 hover:text-yellow-300">
+        <button id="menuToggle" class="p-2 text-yellow-400 hover:text-yellow-300">
             <i class="fas fa-bars"></i>
         </button>
     </div>
@@ -194,26 +194,22 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
                 <?= htmlspecialchars($welcomePrefix) ?>, <?= htmlspecialchars($user['username']) ?> 👋
             </h1>
             <div class="flex flex-col md:flex-row md:items-center md:space-x-6">
-                <!-- Rank -->
+                <!-- Rank Config Switch Integration -->
                 <div class="text-center md:text-right">
                     <p class="text-sm text-gray-400"><?= htmlspecialchars($rankLabel) ?></p>
                     <p class="text-xl font-semibold text-yellow-400">
-                        <?= htmlspecialchars($rankLevelPrefix) ?> <?= $user['rank_level'] ?? 1 ?>
+                        <?= htmlspecialchars($displayRank) ?>
                     </p>
                 </div>
                 <!-- Logout button -->
-                <button onclick="logout()"
-                        class="mt-3 md:mt-0 px-6 py-2 bg-red-600 hover:bg-red-700 rounded-xl">
+                <button onclick="logout()" class="mt-3 md:mt-0 px-6 py-2 bg-red-600 hover:bg-red-700 rounded-xl">
                     <?= htmlspecialchars($logoutText) ?>
                 </button>
             </div>
         </div>
 
-        <!-- Stats cards (wallet, active mining, referral) -->
-        <div class="grid gap-6 mb-8
-                  grid-cols-1
-                  sm:grid-cols-2
-                  lg:grid-cols-3">
+        <!-- Stats cards -->
+        <div class="grid gap-6 mb-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <!-- Wallet -->
             <div class="glass border border-gray-700 rounded-3xl p-6">
                 <p class="text-gray-400"><?= htmlspecialchars($walletLabel) ?></p>
@@ -221,12 +217,10 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
                     <?= htmlspecialchars($currencySymbol) ?><?= number_format($wallet['balance'] ?? 0, 2) ?>
                 </p>
                 <div class="mt-4 flex flex-col sm:flex-row gap-3">
-                    <a href="deposit.php"
-                       class="w-full text-center py-3 bg-green-600 hover:bg-green-700 rounded-2xl">
+                    <a href="deposit.php" class="w-full text-center py-3 bg-green-600 hover:bg-green-700 rounded-2xl">
                         <?= htmlspecialchars($depositText) ?>
                     </a>
-                    <a href="withdraw.php"
-                       class="w-full text-center py-3 bg-yellow-600 hover:bg-yellow-700 rounded-2xl">
+                    <a href="withdraw.php" class="w-full text-center py-3 bg-yellow-600 hover:bg-yellow-700 rounded-2xl">
                         <?= htmlspecialchars($withdrawText) ?>
                     </a>
                 </div>
@@ -245,8 +239,7 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
                 <p class="text-4xl font-bold mt-2 text-green-400">
                     <?= htmlspecialchars($currencySymbol) ?>0.00
                 </p>
-                <a href="referrals.php"
-                   class="mt-3 inline-block text-yellow-400 text-sm hover:underline">
+                <a href="referrals.php" class="mt-3 inline-block text-yellow-400 text-sm hover:underline">
                     <?= htmlspecialchars($viewReferralsText) ?>
                 </a>
             </div>
@@ -261,8 +254,7 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
             <?php if (empty($activeMinings)): ?>
                 <p class="text-gray-400 text-center">
                     <?= htmlspecialchars($noActiveMining) ?>
-                    <a href="plans.php"
-                       class="ml-2 text-yellow-400 hover:underline">
+                    <a href="plans.php" class="ml-2 text-yellow-400 hover:underline">
                         <?= htmlspecialchars($browsePlansText) ?>
                     </a>
                 </p>
@@ -277,8 +269,7 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
                                 <?= htmlspecialchars($currencySymbol) ?><?= number_format($mining['daily_earning'] ?? 0, 2) ?>
                             </p>
                         </div>
-                        <button onclick="claimMining(<?= (int) $mining['id'] ?>)"
-                                class="mt-3 md:mt-0 self-align-end px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-2xl">
+                        <button onclick="claimMining(<?= (int) $mining['id'] ?>)" class="mt-3 md:mt-0 self-align-end px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold rounded-2xl">
                             <?= htmlspecialchars($claimText) ?>
                         </button>
                     </div>
@@ -310,20 +301,17 @@ $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
     </main>
 
     <script>
-        // ==== Sidebar toggle for mobile ====
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.getElementById('menuToggle');
 
         if (menuToggle) {
             menuToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('hidden');
-                // On very small screens we also shift the main content
                 document.querySelector('main').classList.toggle('ml-0');
                 document.querySelector('main').classList.toggle('ml-72');
             });
         }
 
-        // ==== Existing claimMining & logout functions ====
         function claimMining(miningId) {
             const claimConfirmMessage = <?= json_encode($claimConfirmMessage) ?>;
             const claimSuccessMessage = <?= json_encode($claimSuccessMessage) ?>;

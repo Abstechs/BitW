@@ -10,9 +10,15 @@ function createOrder($user_id, $item_id, $amount, $type = 'purchase', $status = 
 
 function getOrders($user_id, $limit = 20) {
     global $pdo;
+    
     $stmt = $pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC LIMIT ?");
-    $stmt->execute([$user_id, $limit]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Explicitly bind parameters with their correct data types
+    $stmt->bindValue(1, $user_id, PDO::PARAM_INT);
+    $stmt->bindValue(2, (int)$limit, PDO::PARAM_INT);
+    
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
 function addToWishlist($user_id, $plan_id) {

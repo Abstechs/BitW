@@ -2,6 +2,7 @@
 // core/plans.php
 require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/wallet.php';
+require_once __DIR__ . '/marketplace.php';
 
 /**
  * Get single plan
@@ -119,7 +120,7 @@ function purchasePlan($user_id, $plan_id, $amount)
     try {
         debitWallet($user_id, $amount, 'investment', 'Plan purchase');
 
-        $stmt = $pdo->prepare("INSERT INTO user_mining (user_id, plan_id, amount, daily_earnings, total_earned, duration_days, start_date, status) VALUES (?, ?, ?, ?, 0.00, ?, CURDATE(), 'active')");
+        $stmt = $pdo->prepare("INSERT INTO user_mining (user_id, plan_id, amount, daily_earnings, total_earned, duration_days, start_date, status, last_claim) VALUES (?, ?, ?, ?, 0.00, ?, CURDATE(), 'active', NULL)");
         $stmt->execute([
             $user_id,
             $plan_id,
@@ -127,6 +128,9 @@ function purchasePlan($user_id, $plan_id, $amount)
             $dailyReward,
             $plan['duration_days']
         ]);
+
+        createOrder($user_id, $plan_id, $amount, 'purchase', 'completed', 'Stone purchase: ' . $plan['name']);
+        addNotification($user_id, 'Stone purchased successfully', 'Your ' . $plan['name'] . ' mining plan is now active.');
 
         $pdo->commit();
 

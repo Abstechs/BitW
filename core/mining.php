@@ -25,7 +25,7 @@ function claimMining($mining_id) {
         }
         
         // Calculate earnings (basic)
-        $daily_earnings = $mining['daily_earning'] ?? 0;
+        $daily_earnings = $mining['daily_earning'] ?? $mining['daily_earnings'] ?? 0;
         
         // Apply rank bonus
         $bonus = getRankBonus($mining['user_id']);
@@ -35,8 +35,8 @@ function claimMining($mining_id) {
         creditWallet($mining['user_id'], $total, "Mining Claim - Session #$mining_id");
         
         // Update last claim
-        $stmt = $pdo->prepare("UPDATE user_mining SET last_claim = NOW() WHERE id = ?");
-        $stmt->execute([$mining_id]);
+        $stmt = $pdo->prepare("UPDATE user_mining SET last_claim = NOW(), total_earned = total_earned + ? WHERE id = ?");
+        $stmt->execute([$total, $mining_id]);
         
         // Add notification
         addNotification($mining['user_id'], "You claimed ₦" . number_format($total, 2) . " from mining");
@@ -51,7 +51,7 @@ function claimMining($mining_id) {
 // Other mining helper functions can go here
 function getActiveMinings($user_id) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT um.*, p.name as plan_name 
+    $stmt = $pdo->prepare("SELECT um.*, p.name as plan_name, p.description, p.background_story, p.read_more_link, p.image, p.daily_rate 
                           FROM user_mining um 
                           JOIN plans p ON um.plan_id = p.id 
                           WHERE um.user_id = ? AND um.status = 'active'");

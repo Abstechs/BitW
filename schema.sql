@@ -36,8 +36,12 @@ CREATE TABLE IF NOT EXISTS plans (
     max_amount DECIMAL(15,2),
     daily_rate DECIMAL(5,2) NOT NULL,
     duration_days INT NOT NULL,
+    max_purchase_attempts INT DEFAULT 1,
     status ENUM('active', 'inactive') DEFAULT 'active',
-    image VARCHAR(255) DEFAULT NULL
+    image VARCHAR(255) DEFAULT NULL,
+    description TEXT,
+    background_story TEXT,
+    read_more_link VARCHAR(255) DEFAULT NULL
 );
 
 -- User Mining / Investments
@@ -51,6 +55,8 @@ CREATE TABLE IF NOT EXISTS user_mining (
     daily_earnings DECIMAL(15,2) DEFAULT 0.00,
     total_earned DECIMAL(15,2) DEFAULT 0.00,
     status ENUM('active', 'completed', 'claimed') DEFAULT 'active',
+    last_claim DATETIME DEFAULT NULL,
+    duration_days INT DEFAULT 30,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (plan_id) REFERENCES plans(id)
 );
@@ -59,12 +65,12 @@ CREATE TABLE IF NOT EXISTS user_mining (
 CREATE TABLE IF NOT EXISTS transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    type ENUM('deposit', 'withdrawal', 'mining_claim', 'referral_bonus') NOT NULL,
+    type ENUM('deposit', 'withdrawal', 'mining_claim', 'referral_bonus', 'investment') NOT NULL,
     amount DECIMAL(15,2) NOT NULL,
     description TEXT,
     reference VARCHAR(100),
     gateway VARCHAR(50),
-    status ENUM('pending', 'completed', 'failed') DEFAULT 'completed',
+    status ENUM('pending', 'completed', 'failed', 'rejected') DEFAULT 'completed',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -78,6 +84,37 @@ CREATE TABLE IF NOT EXISTS referrals (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (referrer_id) REFERENCES users(id),
     FOREIGN KEY (referred_id) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS wishlists (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    plan_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (plan_id) REFERENCES plans(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    item_id INT NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    type ENUM('purchase', 'fund', 'withdrawal', 'wishlist') DEFAULT 'purchase',
+    status ENUM('pending', 'completed', 'failed') DEFAULT 'completed',
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS withdrawals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    method VARCHAR(50) DEFAULT 'wallet',
+    status ENUM('pending', 'completed', 'rejected') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Notifications (in-app)
@@ -100,10 +137,10 @@ CREATE TABLE IF NOT EXISTS ranks (
 );
 
 -- Sample Data
-INSERT IGNORE INTO plans (name, min_amount, max_amount, daily_rate, duration_days) VALUES
-('Starter', 100.00, 999.00, 1.5, 30),
-('Pro', 1000.00, 4999.00, 2.0, 45),
-('Elite', 5000.00, NULL, 2.5, 60);
+INSERT IGNORE INTO plans (name, min_amount, max_amount, daily_rate, duration_days, max_purchase_attempts, description, background_story, read_more_link) VALUES
+('Obsidian Stone', 100.00, 999.00, 1.5, 30, 3, 'A stable starter stone with reliable daily yield and a low-entry cost.', 'Obsidian Stone was forged from volcanic basalt and engineered for calm, consistent compounding.', 'https://example.com/obsidian-stone'),
+('Astral Shard', 1000.00, 4999.00, 2.0, 45, 2, 'A mid-tier mining crystal known for its precise yield and long-horizon performance.', 'Astral Shard carries a luminous core believed to sync with nightly mining cycles.', 'https://example.com/astral-shard'),
+('Titan Ember', 5000.00, NULL, 2.5, 60, 1, 'A premium stone for ambitious miners seeking high yield and prestige.', 'Titan Ember is a rare relic stone, prized for its heat signature and high-output mining profile.', 'https://example.com/titan-ember');
 
 INSERT IGNORE INTO ranks (level, name, min_referrals, bonus_rate) VALUES
 (1, 'Novice', 0, 0),

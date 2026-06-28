@@ -1,6 +1,7 @@
 <?php
 // core/auth.php
 require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/helpers.php';
 
 function loginUser($identifier, $password) {
     global $pdo;
@@ -34,9 +35,20 @@ function registerUser($data) {
     
     try {
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+        $referralCode = strtoupper(substr(generateRef('BITW'), 0, 8));
+        $referredBy = null;
+
+        if (!empty($data['referral_code'])) {
+            $referrerStmt = $pdo->prepare("SELECT id FROM users WHERE referral_code = ? LIMIT 1");
+            $referrerStmt->execute([$data['referral_code']]);
+            $referrer = $referrerStmt->fetch(PDO::FETCH_ASSOC);
+            if ($referrer) {
+                $referredBy = $referrer['id'];
+            }
+        }
         
-        $stmt = $pdo->prepare("INSERT INTO users (username, email, phone, password, pin, q1, a1, q2, a2, q3, a3) 
-                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO users (username, email, phone, password, pin, referral_code, referred_by, q1, a1, q2, a2, q3, a3) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         $result = $stmt->execute([
             $data['username'],
@@ -44,6 +56,8 @@ function registerUser($data) {
             $data['phone'],
             $hashedPassword,
             $data['pin'],
+            $referralCode,
+            $referredBy,
             $data['q1'],
             $data['a1'],
             $data['q2'],
@@ -87,6 +101,19 @@ function getUserByEmail($email) {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
         error_log("GetUserByEmail Error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function getUserByReferralCode($referralCode) {
+    global $pdo;
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE referral_code = ? LIMIT 1");
+        $stmt->execute([$referralCode]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log("GetUserByReferralCode Error: " . $e->getMessage());
         return false;
     }
 }

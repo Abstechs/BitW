@@ -1,13 +1,22 @@
 <?php
 
+require_once "../core/config.php";
 require_once "../core/database.php";
 require_once "../core/helpers.php";
 require_once "../core/session.php";
 
-$config = require "../config/app.php";
-
-$APP_NAME = htmlspecialchars($config['APP_NAME'] ?? 'BitWealthBuilder', ENT_QUOTES, 'UTF-8');
-$APP_ALIAS = htmlspecialchars($config['APP_ALIAS'] ?? 'BitW', ENT_QUOTES, 'UTF-8');
+$appConfig = AppConfig::get('HOME') ?: [];
+$APP_NAME = htmlspecialchars(AppConfig::get('APP_NAME') ?? 'BitWealthBuilder', ENT_QUOTES, 'UTF-8');
+$APP_ALIAS = htmlspecialchars(AppConfig::get('APP_ALIAS') ?? 'BitW', ENT_QUOTES, 'UTF-8');
+$heroTitle = htmlspecialchars($appConfig['HERO_TITLE'] ?? 'Enter a futuristic wealth system built for engagement, yield, and momentum.', ENT_QUOTES, 'UTF-8');
+$heroDescription = htmlspecialchars($appConfig['HERO_DESCRIPTION'] ?? 'BitW blends daily mining, plan-based returns, and secure wallet infrastructure into one modular ecosystem. Join a platform designed for persistence, gamified rewards, and real financial control.', ENT_QUOTES, 'UTF-8');
+$tagline = htmlspecialchars($appConfig['TAGLINE'] ?? "Tomorrow's mining economy, today.", ENT_QUOTES, 'UTF-8');
+$featuresSubtitle = htmlspecialchars($appConfig['FEATURES_SUBTITLE'] ?? 'BitW follows the BitW-Map vision: a modular, secure, and gamified system for daily engagement and wealth creation.', ENT_QUOTES, 'UTF-8');
+$howItWorksTitle = htmlspecialchars($appConfig['HOW_IT_WORKS_TITLE'] ?? 'How BitW works', ENT_QUOTES, 'UTF-8');
+$howItWorksSubtitle = htmlspecialchars($appConfig['HOW_IT_WORKS_SUBTITLE'] ?? 'Follow three simple steps to start mining, growing, and earning with a future-forward economy.', ENT_QUOTES, 'UTF-8');
+$plansTitle = htmlspecialchars($appConfig['PLANS_TITLE'] ?? 'Sample stone plans', ENT_QUOTES, 'UTF-8');
+$plansSubtitle = htmlspecialchars($appConfig['PLANS_SUBTITLE'] ?? 'Explore premium stones designed for different goals: quick returns, compounding growth, and long-term power.', ENT_QUOTES, 'UTF-8');
+$ctaTitle = htmlspecialchars($appConfig['CTA_TITLE'] ?? 'Launch your BitW journey with a single daily login.', ENT_QUOTES, 'UTF-8');
 
 ?>
 <!DOCTYPE html>
@@ -78,7 +87,7 @@ $APP_ALIAS = htmlspecialchars($config['APP_ALIAS'] ?? 'BitW', ENT_QUOTES, 'UTF-8
     <div class="logo">B</div>
     <div class="brand-text">
         <h1><?= $APP_NAME ?></h1>
-        <p>BitW — Tomorrow's mining economy, today.</p>
+        <p><?= $APP_ALIAS ?> — <?= $tagline ?></p>
     </div>
 </div>
 <nav class="nav">
@@ -94,8 +103,8 @@ $APP_ALIAS = htmlspecialchars($config['APP_ALIAS'] ?? 'BitW', ENT_QUOTES, 'UTF-8
 <div class="hero-background"></div>
 <div class="hero-left">
     <div class="kicker">Daily login yields. Stone-powered economy.</div>
-    <h2>Enter a futuristic wealth system built for engagement, yield, and momentum.</h2>
-    <p class="lead"><?= $APP_NAME ?> blends daily mining, plan-based returns, and secure wallet infrastructure into one modular ecosystem. Join a platform designed for persistence, gamified rewards, and real financial control.</p>
+    <h2><?= $heroTitle ?></h2>
+    <p class="lead"><?= $heroDescription ?></p>
     <div class="cta">
         <a class="btn btn-primary" href="register.php">Join BitW</a>
         <a class="btn btn-secondary" href="#features">Explore Features</a>
@@ -124,7 +133,7 @@ $APP_ALIAS = htmlspecialchars($config['APP_ALIAS'] ?? 'BitW', ENT_QUOTES, 'UTF-8
 <section id="features" class="section-title">
     <div>
         <h2>Designed for the modern digital economy</h2>
-        <p>BitW follows the BitW-Map vision: a modular, secure, and gamified system for daily engagement and wealth creation.</p>
+        <p><?= $featuresSubtitle ?></p>
     </div>
 </section>
 
@@ -145,8 +154,8 @@ $APP_ALIAS = htmlspecialchars($config['APP_ALIAS'] ?? 'BitW', ENT_QUOTES, 'UTF-8
 
 <section id="how-it-works" class="section-title">
     <div>
-        <h2>How BitW works</h2>
-        <p>Follow three simple steps to start mining, growing, and earning with a future-forward economy.</p>
+        <h2><?= $howItWorksTitle ?></h2>
+        <p><?= $howItWorksSubtitle ?></p>
     </div>
 </section>
 
@@ -167,8 +176,8 @@ $APP_ALIAS = htmlspecialchars($config['APP_ALIAS'] ?? 'BitW', ENT_QUOTES, 'UTF-8
 
 <section id="plans" class="section-title">
     <div>
-        <h2>Sample stone plans</h2>
-        <p>Explore premium stones designed for different goals: quick returns, compounding growth, and long-term power.</p>
+        <h2><?= $plansTitle ?></h2>
+        <p><?= $plansSubtitle ?></p>
     </div>
 </section>
 
@@ -200,7 +209,7 @@ $APP_ALIAS = htmlspecialchars($config['APP_ALIAS'] ?? 'BitW', ENT_QUOTES, 'UTF-8
     <div class="bottom-cta-content">
         <div>
             <span>Ready to power up?</span>
-            <h2>Launch your BitW journey with a single daily login.</h2>
+            <h2><?= $ctaTitle ?></h2>
         </div>
         <a class="btn btn-primary btn-cta" href="register.php">Start Mining Today</a>
     </div>

@@ -15,6 +15,7 @@ if ($_POST) {
         "phone" => $_POST['phone'],
         "password" => $_POST['password'],
         "pin" => $_POST['pin'],
+        "referral_code" => $_GET['ref'] ?? ($_POST['referral_code'] ?? ''),
 
         "q1" => $_POST['q1'],
         "a1" => $_POST['a1'],

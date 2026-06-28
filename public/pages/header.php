@@ -1,6 +1,8 @@
 <?php
+require_once __DIR__ . '/../../core/config.php';
+
 if (!isset($pageTitle)) {
-    $pageTitle = 'BitW';
+    $pageTitle = AppConfig::get('APP_ALIAS') ?: 'BitW';
 }
 ?>
 <!DOCTYPE html>

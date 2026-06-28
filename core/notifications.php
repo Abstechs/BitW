@@ -10,8 +10,9 @@ function addNotification($user_id, $title, $message = "") {
 
 function getNotifications($user_id, $limit = 10) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT ?");
-    $stmt->execute([$user_id, $limit]);
+    $limit = (int) $limit;
+    $stmt = $pdo->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT " . $limit);
+    $stmt->execute([$user_id]);
     return $stmt->fetchAll();
 }
 ?>

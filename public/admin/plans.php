@@ -24,6 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $maxAmount = $_POST['max_amount'] === '' ? null : floatval($_POST['max_amount']);
     $dailyRate = floatval($_POST['daily_rate'] ?? 0);
     $durationDays = intval($_POST['duration_days'] ?? 0);
+    $maxPurchases = intval($_POST['max_purchase_attempts'] ?? 1);
+    $description = trim($_POST['description'] ?? '');
+    $backgroundStory = trim($_POST['background_story'] ?? '');
+    $readMoreLink = trim($_POST['read_more_link'] ?? '');
     $status = $_POST['status'] === 'inactive' ? 'inactive' : 'active';
     $image = $_FILES['image'] ?? null;
 
@@ -47,17 +51,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($action === 'create') {
-                $stmt = $pdo->prepare("INSERT INTO plans (name, min_amount, max_amount, daily_rate, duration_days, status, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$name, $minAmount, $maxAmount, $dailyRate, $durationDays, $status, $imagePath]);
+                $stmt = $pdo->prepare("INSERT INTO plans (name, min_amount, max_amount, daily_rate, duration_days, max_purchase_attempts, status, image, description, background_story, read_more_link) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$name, $minAmount, $maxAmount, $dailyRate, $durationDays, $maxPurchases, $status, $imagePath, $description, $backgroundStory, $readMoreLink]);
                 $success = 'Stone plan created successfully.';
                 $action = 'list';
             } elseif ($action === 'update' && $planId) {
                 if ($imagePath) {
-                    $stmt = $pdo->prepare("UPDATE plans SET name = ?, min_amount = ?, max_amount = ?, daily_rate = ?, duration_days = ?, status = ?, image = ? WHERE id = ?");
-                    $stmt->execute([$name, $minAmount, $maxAmount, $dailyRate, $durationDays, $status, $imagePath, $planId]);
+                    $stmt = $pdo->prepare("UPDATE plans SET name = ?, min_amount = ?, max_amount = ?, daily_rate = ?, duration_days = ?, max_purchase_attempts = ?, status = ?, image = ?, description = ?, background_story = ?, read_more_link = ? WHERE id = ?");
+                    $stmt->execute([$name, $minAmount, $maxAmount, $dailyRate, $durationDays, $maxPurchases, $status, $imagePath, $description, $backgroundStory, $readMoreLink, $planId]);
                 } else {
-                    $stmt = $pdo->prepare("UPDATE plans SET name = ?, min_amount = ?, max_amount = ?, daily_rate = ?, duration_days = ?, status = ? WHERE id = ?");
-                    $stmt->execute([$name, $minAmount, $maxAmount, $dailyRate, $durationDays, $status, $planId]);
+                    $stmt = $pdo->prepare("UPDATE plans SET name = ?, min_amount = ?, max_amount = ?, daily_rate = ?, duration_days = ?, max_purchase_attempts = ?, status = ?, description = ?, background_story = ?, read_more_link = ? WHERE id = ?");
+                    $stmt->execute([$name, $minAmount, $maxAmount, $dailyRate, $durationDays, $maxPurchases, $status, $description, $backgroundStory, $readMoreLink, $planId]);
                 }
                 $success = 'Stone plan updated successfully.';
                 $action = 'list';
@@ -139,6 +143,24 @@ require_once __DIR__ . '/includes/admin_header.php';
                     <label class="form-label">Duration (days)</label>
                     <input type="number" name="duration_days" class="form-field" value="<?= htmlspecialchars($plan['duration_days'] ?? '') ?>">
                 </div>
+                <div>
+                    <label class="form-label">Max purchases</label>
+                    <input type="number" name="max_purchase_attempts" class="form-field" value="<?= htmlspecialchars($plan['max_purchase_attempts'] ?? 1) ?>">
+                </div>
+            </div>
+            <div class="grid gap-5 mb-5 md:grid-cols-2">
+                <div>
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-field" rows="3"><?= htmlspecialchars($plan['description'] ?? '') ?></textarea>
+                </div>
+                <div>
+                    <label class="form-label">Background story</label>
+                    <textarea name="background_story" class="form-field" rows="3"><?= htmlspecialchars($plan['background_story'] ?? '') ?></textarea>
+                </div>
+            </div>
+            <div class="mb-5">
+                <label class="form-label">Read more link</label>
+                <input type="text" name="read_more_link" class="form-field" value="<?= htmlspecialchars($plan['read_more_link'] ?? '') ?>">
             </div>
             <div class="mb-5">
                 <label class="form-label">Plan image</label>

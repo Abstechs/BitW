@@ -195,27 +195,39 @@ if ($useRankName) {
     </div>
     <!-- =================================================================== -->
 
+    <!-- DESKTOP SIDEBAR -->
     <div id="sidebar" class="w-72 bg-black h-screen fixed top-0 left-0 p-6 z-50 md:block lg:block hidden">
         <div class="flex items-center gap-3 mb-10">
             <h1 class="text-3xl font-bold text-yellow-400"><?= htmlspecialchars($brand) ?></h1>
         </div>
         <nav class="space-y-2">
-            <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-xl"><i class="fas fa-home"></i> <?= htmlspecialchars($navDashboard) ?></a>
-            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navMining) ?></a>
-            <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-users"></i> <?= htmlspecialchars($navReferrals) ?></a>
-            <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-history"></i> <?= htmlspecialchars($navTransactions) ?></a>
-            <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl"><i class="fas fa-money-bill"></i> <?= htmlspecialchars($navWithdraw) ?></a>
+            <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-xl text-white"><i class="fas fa-home"></i> <?= htmlspecialchars($navDashboard) ?></a>
+            <a href="plans.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-folder-open"></i> My Portfolio</a>
+            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navMining) ?></a>
+            <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-users"></i> <?= htmlspecialchars($navReferrals) ?></a>
+            <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-history"></i> <?= htmlspecialchars($navTransactions) ?></a>
+            <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-money-bill"></i> <?= htmlspecialchars($navWithdraw) ?></a>
         </nav>
     </div>
 
-    <!-- MOBILE HAMBURGER -->
-    <div class="md:hidden lg:hidden flex items-center justify-between p-4 bg-black z-50">
+    <!-- MOBILE NAVIGATION HEADER -->
+    <div class="md:hidden lg:hidden flex items-center justify-between p-4 bg-black z-50 relative border-b border-gray-900">
         <div class="flex items-center gap-3">
             <h1 class="text-2xl font-bold text-yellow-400"><?= htmlspecialchars($brand) ?></h1>
         </div>
-        <button id="menuToggle" class="p-2 text-yellow-400 hover:text-yellow-300">
+        <button id="menuToggle" class="p-2 text-yellow-400 hover:text-yellow-300 focus:outline-none">
             <i class="fas fa-bars"></i>
         </button>
+
+        <!-- MOBILE FLOATING DROPDOWN MENU -->
+        <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-black border-b border-gray-800 p-4 space-y-2 shadow-xl">
+            <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-gray-900 rounded-xl text-white"><i class="fas fa-home"></i> <?= htmlspecialchars($navDashboard) ?></a>
+            <a href="plans.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-folder-open"></i> My Portfolio</a>
+            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navMining) ?></a>
+            <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-users"></i> <?= htmlspecialchars($navReferrals) ?></a>
+            <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-history"></i> <?= htmlspecialchars($navTransactions) ?></a>
+            <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-money-bill"></i> <?= htmlspecialchars($navWithdraw) ?></a>
+        </div>
     </div>
 
     <!-- MAIN CONTENT -->
@@ -284,7 +296,7 @@ if ($useRankName) {
             <?php if (empty($activeMinings)): ?>
                 <p class="text-gray-400 text-center">
                     <?= htmlspecialchars($noActiveMining) ?>
-                    <a href="plans.php" class="ml-2 text-yellow-400 hover:underline">
+                    <a href="mining.php" class="ml-2 text-yellow-400 hover:underline">
                         <?= htmlspecialchars($browsePlansText) ?>
                     </a>
                 </p>
@@ -336,12 +348,19 @@ if ($useRankName) {
     <script>
         const sidebar = document.getElementById('sidebar');
         const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
 
         if (menuToggle) {
             menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('hidden');
-                document.querySelector('main').classList.toggle('ml-0');
-                document.querySelector('main').classList.toggle('ml-72');
+                // For desktop view handling adjustments
+                if (window.innerWidth > 768) {
+                    sidebar.classList.toggle('hidden');
+                    document.querySelector('main').classList.toggle('ml-0');
+                    document.querySelector('main').classList.toggle('ml-72');
+                } else {
+                    // For mobile menu layout handling
+                    mobileMenu.classList.toggle('hidden');
+                }
             });
         }
 

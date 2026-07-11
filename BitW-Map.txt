@@ -1,0 +1,359 @@
+BITWEALTHBUILDER (BITW)
+FULL DEVELOPMENT WORK PLAN
+====================================================
+
+PROJECT OVERVIEW
+----------------------------------------------------
+Name: BitWealthBuilder
+Short Name / Brand Alias: BitW
+
+Core Concept:
+A modular, scalable PHP-based digital wealth system built around:
+- Daily login-based mining engine
+- Stone-based investment (plans system)
+- Wallet-driven economy
+- Admin-controlled financial ecosystem
+- Gamified ranking + engagement loop
+- Dark futuristic UI with icon-first navigation
+
+SCALABILITY RULE:
+All references MUST use:
+- APP_NAME = BitWealthBuilder
+- APP_ALIAS = BitW
+
+These values must be stored in CONFIG and used globally for:
+- UI branding
+- Emails
+- System messages
+- Admin settings
+- API responses
+
+====================================================
+PHASE 1 — SYSTEM ARCHITECTURE FOUNDATION
+====================================================
+
+OBJECTIVE:
+Build a lightweight modular PHP architecture (no heavy framework dependency).
+
+STRUCTURE:
+- /core        → system engine (auth, db, helpers)
+- /modules     → feature modules (auth, user, admin, wallet)
+- /public      → entry UI pages
+- /api         → Paystack + integrations
+- /config      → global configuration (BitW branding lives here)
+
+CORE CONFIG VALUES:
+APP_NAME = "BitWealthBuilder"
+APP_ALIAS = "BitW"
+
+CORE TASKS:
+- Database connection layer
+- Session manager
+- Helper utilities (validation, formatting)
+- Simple routing system (include-based)
+
+DATABASE TABLES:
+- users
+- wallets
+- transactions
+- plans
+- user_plans
+- withdrawals
+- referrals
+- blog_posts
+- settings
+
+OUTPUT:
+✔ Modular PHP skeleton
+✔ Connected database
+✔ Config-driven branding system
+
+====================================================
+PHASE 2 — AUTHENTICATION & SECURITY ENGINE
+====================================================
+
+OBJECTIVE:
+Secure identity system for BitW.
+
+REGISTRATION:
+- Username (unique)
+- Email
+- Phone (WhatsApp format)
+- Password (6+ alphanumeric)
+- 4-digit PIN
+- 3 security questions
+
+LOGIN:
+- Email + password
+- Phone + password
+
+RECOVERY FLOW:
+- Email reset OR phone reset
+- Secret questions (3-step verification gate)
+
+SECURITY:
+- bcrypt password hashing
+- encrypted PIN storage
+- session timeout
+- login attempt limiter
+
+OUTPUT:
+✔ Secure authentication system
+✔ Recovery system fully functional
+
+====================================================
+PHASE 3 — WALLET & TRANSACTION ENGINE
+====================================================
+
+OBJECTIVE:
+Financial core system for BitW economy.
+
+WALLET SYSTEM:
+- User balance tracking
+- Credit/debit engine
+- Instant wallet update
+
+TRANSACTIONS:
+- Deposit tracking
+- Withdrawal tracking
+- Plan purchase tracking
+
+STATUS FLOW:
+- pending
+- verified
+- rejected
+- completed
+
+OUTPUT:
+✔ Wallet system active
+✔ Full transaction audit system
+
+====================================================
+PHASE 4 — BITW MINING ENGINE (CORE SYSTEM)
+====================================================
+
+OBJECTIVE:
+Build DAILY LOGIN MINING SYSTEM.
+
+CORE MECHANIC:
+User must log in daily to activate stone mining.
+
+RULES:
+- Login = triggers mining
+- No login = no reward for that day
+- Missed day = lost yield permanently
+- Missed day still counts in duration
+
+YIELD FORMULA:
+daily_reward = capital × (yield_rate / 100)
+
+TRACKING FIELDS:
+- current_day
+- last_login_date
+- missed_days
+- total_earned
+- status
+
+LOGIN FLOW:
+1. Authenticate user
+2. Fetch active BitW stones (plans)
+3. Check last login date
+4. Apply mining logic
+5. Update wallet
+6. Update progress tracker
+
+OUTPUT:
+✔ Fully functional BitW mining engine
+✔ Daily login-based earning system
+
+====================================================
+PHASE 5 — PLANS SYSTEM (STONE ECONOMY)
+====================================================
+
+OBJECTIVE:
+Build BitW stone investment ecosystem.
+
+PLAN ATTRIBUTES:
+- name (Mythic Stone branding)
+- price
+- yield rate (%)
+- duration (days)
+- purchase limit per user
+
+EXAMPLES:
+- Obsidian Stone
+- Celestial Core
+- Void Crystal
+- Titan Ember
+- Astral Shard
+
+FUNCTIONS:
+- Purchase plan
+- Activate mining cycle
+- Track progress
+- Auto-expire system
+
+OUTPUT:
+✔ BitW plan marketplace
+✔ Yield-based economy engine
+
+====================================================
+PHASE 6 — USER DASHBOARD SYSTEM
+====================================================
+
+OBJECTIVE:
+User experience layer for BitW.
+
+MODULES:
+- Wallet dashboard
+- Active mining panel
+- Plan tracking system
+- History logs
+- Referral system
+- Rank progression
+
+MINING UI:
+- Stone cards
+- Progress bar (Day X/Y)
+- “Mine Today” button
+- Countdown timer
+- Status indicators:
+  - Active
+  - Missed
+  - Completed
+
+RANK SYSTEM (20 TIERS):
+- Ember Initiate
+- Stone Seeker
+- Crystal Wanderer
+- Iron Ascendant
+...
+(up to 20 mythic ranks)
+
+OUTPUT:
+✔ Complete BitW user dashboard
+✔ Mining interface integrated
+
+====================================================
+PHASE 7 — ADMIN CONTROL SYSTEM
+====================================================
+
+OBJECTIVE:
+Full control center for BitW ecosystem.
+
+USERS:
+- CRUD users
+- suspend/block users
+- export WhatsApp/email lists
+
+PLANS:
+- create/edit/delete plans
+- adjust yield rates
+- control purchase limits
+
+WALLET:
+- manual credit/debit
+- full audit logs
+
+DEPOSITS:
+- Paystack auto verification
+- manual approval system
+
+WITHDRAWALS:
+- approve/reject/disburse
+- status tracking system
+
+BROADCAST SYSTEM:
+- global announcements
+- individual user alerts
+- system-wide notifications
+
+SETTINGS:
+- app name (BitWealthBuilder)
+- alias (BitW)
+- logo
+- theme colors
+- system rules
+
+OUTPUT:
+✔ Fully functional BitW admin panel
+
+====================================================
+PHASE 8 — UI / UX DESIGN SYSTEM
+====================================================
+
+OBJECTIVE:
+Create consistent futuristic interface.
+
+STYLE:
+- Dark theme (black / deep navy)
+- Neon accent highlights
+- Glass-card UI design
+- Icon-first navigation system
+- Minimal text usage
+
+NAVIGATION:
+- Sidebar (icon-driven)
+- Modular dashboard widgets
+- Reusable components
+
+RULE:
+- No full page duplication
+- Use modular content loading
+
+OUTPUT:
+✔ Unified UI system
+✔ Reusable layout engine
+
+====================================================
+PHASE 9 — SECURITY HARDENING
+====================================================
+
+OBJECTIVE:
+Production-grade protection layer.
+
+SECURITY FEATURES:
+- CSRF protection
+- session encryption
+- input sanitization
+- role-based access control
+- activity logging
+- rate limiting
+
+OUTPUT:
+✔ Secure BitW system ready for deployment
+
+====================================================
+PHASE 10 — SCALABILITY & FUTURE EXTENSION
+====================================================
+
+OBJECTIVE:
+Prepare BitW for future expansion.
+
+FEATURES:
+- API-ready structure
+- database indexing optimization
+- optional cron expansion (future upgrade)
+- Laravel migration compatibility path
+- performance tuning layer
+
+OUTPUT:
+✔ Fully scalable architecture
+✔ Future upgrade ready
+
+====================================================
+FINAL SYSTEM SUMMARY
+====================================================
+
+BitWealthBuilder (BitW) is designed as:
+
+- A daily engagement mining economy
+- A wallet-driven digital wealth system
+- A gamified stone investment ecosystem
+- A modular PHP application (no heavy framework dependency)
+- A dark futuristic UI platform
+- A fully scalable fintech/game hybrid architecture
+
+====================================================
+END OF BITW WORK PLAN
+====================================================

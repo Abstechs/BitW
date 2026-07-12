@@ -16,11 +16,15 @@ function loginUser($identifier, $password) {
             $_SESSION['username'] = $user['username'];
             $_SESSION['is_admin'] = $user['is_admin'] ?? 0;
             
-            // Auto redirect admin
+            // Auto redirect admin safely
             if ($user['is_admin'] == 1) {
                 header("Location: ../admin/index.php");
                 exit;
             }
+
+            // Enforce restrictions right during authentication
+            enforceUserSystemGuard($user['status'] ?? 'active', $user['status_custom_message'] ?? null);
+            
             return $user;
         }
         return false;
@@ -28,6 +32,49 @@ function loginUser($identifier, $password) {
         error_log("Login Error: " . $e->getMessage());
         return false;
     }
+}
+
+/**
+ * Intercepts execution flows for blocked, restricted, or flag-warned system accounts.
+ */
+function enforceUserSystemGuard($userStatus, $customMessage = null) {
+    if ($userStatus === 'active') return;
+
+    // Define systemic fallback structures
+    $fallbacks = [
+        'banned' => 'Your authentication authorization context has been permanently revoked.',
+        'restricted' => 'Transactional modules are temporarily restricted on this asset profile account.',
+        'action_required' => 'Administrative profile configuration updates are required to proceed.',
+        'verification_required' => 'KYC compliance checks are required before execution pipelines unlock.',
+        'under_age' => 'Ecosystem compliance rules require proof of majority verification access parameters.'
+    ];
+
+    $displayMessage = $customMessage ?: ($fallbacks[$userStatus] ?? 'Access denied via regulatory protocol.');
+
+    // Gracefully block execution flows using a custom client notification template
+    die("
+    <!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Account Status Alert</title>
+        <script src='https://cdn.tailwindcss.com'></script>
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <style>body { background: #0f172a; color: #f8fafc; font-family: sans-serif; }</style>
+    </head>
+    <body class='flex items-center justify-center min-h-screen p-4'>
+        <div class='max-w-md w-full p-8 rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-md text-center shadow-xl'>
+            <i class='bx bx-shield-x text-5xl text-rose-500 mb-4 animate-pulse'></i>
+            <h1 class='text-2xl font-bold tracking-tight text-white capitalize'>" . str_replace('_', ' ', $userStatus) . "</h1>
+            <p class='mt-3 text-sm text-slate-400 leading-relaxed'>" . htmlspecialchars($displayMessage) . "</p>
+            <div class='mt-6 pt-4 border-t border-white/5'>
+                <a href='logout.php' class='inline-block px-5 py-2 text-xs font-semibold bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-all'>Disconnect Session</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    ");
 }
 
 function registerUser($data) {
@@ -167,5 +214,20 @@ function updateUserPassword($user_id, $password) {
 }
 
 function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+    global $pdo;
+    if (!isset($_SESSION['user_id'])) {
+        return false;
+    }
+
+    // Live query to check for sudden administrative bans or restrictions
+    $stmt = $pdo->prepare("SELECT status, status_custom_message FROM users WHERE id = ? LIMIT 1");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        // Automatically blocks execution and displays your custom admin messages if flagged
+        enforceUserSystemGuard($user['status'], $user['status_custom_message']);
+    }
+
+    return true;
 }

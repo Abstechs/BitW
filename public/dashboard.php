@@ -320,7 +320,7 @@ if ($useRankName) {
                     </div>
                 </a>
                 <a href="mining.php" class="glass p-4 rounded-2xl border border-white/5 hover:border-yellow-500/30 bg-slate-900/10 hover:bg-slate-900/40 transition-all flex items-start gap-3 group">
-                    <div class="p-2.5 bg-yellow-500/10 rounded-xl text-yellow-400 group-hover:bg-yellow-500 group-hover:text-black transition-all"><i class="bx bx-bolt text-xl"></i></div>
+                    <div class="p-2.5 bg-yellow-500/10 rounded-xl text-yellow-400 group-hover:bg-yellow-500 group-hover:text-black transition-all"><i class="bx bx-chip text-xl"></i></div>
                     <div>
                         <h4 class="text-sm font-bold text-white">Staking & Mining Rigs</h4>
                         <p class="text-[11px] text-slate-400 mt-0.5 leading-relaxed">Launch high-scarcity algorithmic mining configurations and secure recurring session payouts.</p>

@@ -157,6 +157,9 @@ if ($useRankName) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($dashboardConfig['TITLE_PREFIX'] ?? 'Dashboard') ?> - <?= htmlspecialchars($appName) ?></title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
@@ -176,8 +179,17 @@ if ($useRankName) {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
         }
     </style>
+    <style>
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .glass { background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+    #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar-hidden { transform: translateX(-100%); }
+</style>
+
 </head>
-<body class="bg-[#070a13] text-white min-h-screen flex">
+<body class="bg-[#070a13] text-white min-h-screen flex antialiased graphic-smooth">
 
     <!-- ==================== CUSTOM CONFIRMATION MODAL ==================== -->
     <div id="confirmModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden opacity-0 transition-all duration-300">
@@ -267,7 +279,7 @@ if ($useRankName) {
                 <!-- Aggregate Collective Portfolio Capitalization worth -->
                 <div class="glass rounded-2xl p-5 bg-gradient-to-br from-slate-900/60 via-slate-900/40 to-blue-950/20 shadow-lg relative overflow-hidden group">
                     <p class="text-xs font-semibold uppercase text-slate-400 tracking-wider">Account Valuation Net Worth</p>
-                    <p class="text-3xl font-mono font-black text-white mt-2">$<?= number_format($netWorth, 2) ?></p>
+                    <p class="text-3xl font-bold font-black text-white mt-2">$<?= number_format($netWorth, 2) ?></p>
                     <p class="text-[10px] text-blue-400 mt-1">Cash + Active Exchange Resource Inventory Stocks</p>
                     <i class="bx bx-line-chart text-7xl text-blue-500/5 absolute right-2 bottom-0 pointer-events-none group-hover:scale-110 transition-transform"></i>
                 </div>
@@ -275,7 +287,7 @@ if ($useRankName) {
                 <!-- Liquid Fiat Holding Balance Field -->
                 <div class="glass rounded-2xl p-5 shadow-lg relative overflow-hidden group">
                     <p class="text-xs font-semibold uppercase text-slate-400 tracking-wider"><?= htmlspecialchars($walletLabel) ?></p>
-                    <p class="text-3xl font-mono font-black text-emerald-400 mt-2"><?= htmlspecialchars($currencySymbol) ?><?= number_format($wallet['balance'] ?? 0, 2) ?></p>
+                    <p class="text-3xl font-bold font-black text-emerald-400 mt-2"><?= htmlspecialchars($currencySymbol) ?><?= number_format($wallet['balance'] ?? 0, 2) ?></p>
                     <div class="mt-4 flex gap-2">
                         <a href="deposit.php" class="w-1/2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl text-center shadow-md transition-all"><?= htmlspecialchars($depositText) ?></a>
                         <a href="withdraw.php" class="w-1/2 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl text-center border border-white/5 transition-all"><?= htmlspecialchars($withdrawText) ?></a>

@@ -117,6 +117,7 @@ $dailyEarningLabel = $dashboardConfig['DAILY_EARNING_LABEL'] ?? 'Daily';
 $currencySymbol = $dashboardConfig['CURRENCY_SYMBOL'] ?? '₦';
 $navDashboard = $dashboardConfig['NAV_DASHBOARD'] ?? 'Dashboard';
 $navMining = $dashboardConfig['NAV_MINING'] ?? 'Mining';
+$navTrading = $dashboardConfig['NAV_TRADING'] ?? 'Trading';
 $navReferrals = $dashboardConfig['NAV_REFERRALS'] ?? 'Referrals';
 $navTransactions = $dashboardConfig['NAV_TRANSACTIONS'] ?? 'Transactions';
 $navWithdraw = $dashboardConfig['NAV_WITHDRAW'] ?? 'Withdraw';
@@ -204,7 +205,8 @@ if ($useRankName) {
         <nav class="space-y-2">
             <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-gray-800 rounded-xl text-white"><i class="fas fa-home"></i> <?= htmlspecialchars($navDashboard) ?></a>
             <a href="plans.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-folder-open"></i> My Portfolio</a>
-            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navMining) ?></a>
+            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-microchip"></i> <?= htmlspecialchars($navMining) ?></a>
+            <a href="trading.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navTrading) ?></a>
             <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-users"></i> <?= htmlspecialchars($navReferrals) ?></a>
             <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-history"></i> <?= htmlspecialchars($navTransactions) ?></a>
             <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-800 rounded-xl text-gray-400 hover:text-white"><i class="fas fa-money-bill"></i> <?= htmlspecialchars($navWithdraw) ?></a>
@@ -224,8 +226,9 @@ if ($useRankName) {
         <!-- MOBILE FLOATING DROPDOWN MENU -->
         <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-black border-b border-gray-800 p-4 space-y-2 shadow-xl">
             <a href="dashboard.php" class="flex items-center gap-3 px-4 py-3 bg-gray-900 rounded-xl text-white"><i class="fas fa-home"></i> <?= htmlspecialchars($navDashboard) ?></a>
+            <a href="trading.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navTrading) ?></a>
             <a href="plans.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-folder-open"></i> My Portfolio</a>
-            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-chart-line"></i> <?= htmlspecialchars($navMining) ?></a>
+            <a href="mining.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-microchip"></i> <?= htmlspecialchars($navMining) ?></a>
             <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-users"></i> <?= htmlspecialchars($navReferrals) ?></a>
             <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-history"></i> <?= htmlspecialchars($navTransactions) ?></a>
             <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-900 rounded-xl text-gray-300"><i class="fas fa-money-bill"></i> <?= htmlspecialchars($navWithdraw) ?></a>

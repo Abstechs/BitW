@@ -260,7 +260,7 @@ if ($useRankName) {
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
                 <div>
                     <h1 class="text-2xl font-black text-white tracking-tight"><?= htmlspecialchars($welcomePrefix) ?>, <?= htmlspecialchars($user['username']) ?> 👋</h1>
-                    <p class="text-xs text-slate-400 mt-1">Ref Identity: <span class="font-mono text-slate-300 font-bold"><?= $user['referral_code'] ?></span></p>
+                    <p class="text-xs text-slate-400 mt-1">Ref Identity: <span class="font-sans text-slate-300 font-bold"><?= $user['referral_code'] ?></span></p>
                 </div>
                 <div class="flex items-center gap-4 self-end sm:self-auto">
                     <div class="text-right hidden sm:block">
@@ -299,13 +299,13 @@ if ($useRankName) {
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-xs font-semibold uppercase text-slate-400 tracking-wider"><?= htmlspecialchars($activeMiningLabel) ?></p>
-                            <p class="text-3xl font-mono font-black text-yellow-400 mt-2"><?= count($activeMinings) ?></p>
+                            <p class="text-3xl font-sans font-black text-yellow-400 mt-2"><?= count($activeMinings) ?></p>
                         </div>
-                        <span class="text-[10px] font-mono bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded border border-yellow-500/20 uppercase tracking-tight"><?= htmlspecialchars($plansRunningText) ?></span>
+                        <span class="text-[10px] font-sans bg-yellow-500/10 text-yellow-400 px-2 py-0.5 rounded border border-yellow-500/20 uppercase tracking-tight"><?= htmlspecialchars($plansRunningText) ?></span>
                     </div>
                     <div class="mt-4 pt-2 border-t border-white/5 flex justify-between items-center">
                         <p class="text-xs text-slate-400"><?= htmlspecialchars($referralLabel) ?></p>
-                        <span class="font-mono text-sm font-bold text-emerald-400"><?= htmlspecialchars($currencySymbol) ?>0.00</span>
+                        <span class="font-sans text-sm font-bold text-emerald-400"><?= htmlspecialchars($currencySymbol) ?>0.00</span>
                     </div>
                 </div>
             </div>
@@ -369,12 +369,12 @@ if ($useRankName) {
                                         ?>
                                             <tr class="hover:bg-white/[0.02] transition-colors">
                                                 <td class="py-3 font-bold text-white flex items-center gap-2">
-                                                    <span class="text-[10px] bg-blue-500/10 text-blue-400 font-mono px-1.5 py-0.5 rounded"><?= $h['ticker'] ?></span>
+                                                    <span class="text-[10px] bg-blue-500/10 text-blue-400 font-sans px-1.5 py-0.5 rounded"><?= $h['ticker'] ?></span>
                                                     <?= htmlspecialchars($h['name']) ?>
                                                 </td>
-                                                <td class="py-3 text-right font-mono font-medium"><?= number_format($h['units'], 4) ?></td>
-                                                <td class="py-3 text-right font-mono text-slate-400">$<?= number_format($h['current_price'], 4) ?></td>
-                                                <td class="py-3 text-right font-mono text-emerald-400 font-bold">$<?= number_format($worth, 2) ?></td>
+                                                <td class="py-3 text-right font-sans font-medium"><?= number_format($h['units'], 4) ?></td>
+                                                <td class="py-3 text-right font-sans text-slate-400">$<?= number_format($h['current_price'], 4) ?></td>
+                                                <td class="py-3 text-right font-sans text-emerald-400 font-bold">$<?= number_format($worth, 2) ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -401,7 +401,7 @@ if ($useRankName) {
                                         <h3 class="text-xs font-bold text-white"><?= htmlspecialchars($mining['plan_name']) ?></h3>
                                         <p class="text-[11px] text-slate-400 mt-0.5">
                                             <?= htmlspecialchars($dailyEarningLabel) ?> Multiplier:
-                                            <span class="text-emerald-400 font-mono font-semibold"><?= htmlspecialchars($currencySymbol) ?><?= number_format($mining['daily_earning'] ?? 0, 2) ?></span>
+                                            <span class="text-emerald-400 font-sans font-semibold"><?= htmlspecialchars($currencySymbol) ?><?= number_format($mining['daily_earning'] ?? 0, 2) ?></span>
                                         </p>
                                     </div>
                                     <button onclick="askClaimConfirmation(<?= (int) $mining['id'] ?>)" class="w-full sm:w-auto px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-black text-xs font-black rounded-xl transition-all shadow-md shadow-yellow-500/10">
@@ -430,10 +430,10 @@ if ($useRankName) {
                                             <div class="font-bold text-white group-hover:text-yellow-400 transition-colors">
                                                 <?= htmlspecialchars($notif['title']) ?>
                                                 <?php if (is_null($notif['user_id'])): ?>
-                                                    <span class="ml-1 text-[8px] bg-cyan-500/10 text-cyan-400 px-1.5 py-0.2 rounded font-mono uppercase">System</span>
+                                                    <span class="ml-1 text-[8px] bg-cyan-500/10 text-cyan-400 px-1.5 py-0.2 rounded font-sans uppercase">System</span>
                                                 <?php endif; ?>
                                             </div>
-                                            <div class="text-[10px] text-slate-500 font-mono mt-0.5"><?= $notif['created_at'] ?></div>
+                                            <div class="text-[10px] text-slate-500 font-sans mt-0.5"><?= $notif['created_at'] ?></div>
                                         </div>
                                     </div>
                                     <span class="text-slate-600 group-hover:text-slate-300 text-[10px] mt-0.5"><i class="fas fa-chevron-down"></i></span>

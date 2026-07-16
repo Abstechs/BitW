@@ -1,5 +1,5 @@
 <?php
-
+// public/index.php
 require_once "../core/config.php";
 require_once "../core/database.php";
 require_once "../core/helpers.php";
@@ -17,208 +17,282 @@ $howItWorksSubtitle = htmlspecialchars($appConfig['HOW_IT_WORKS_SUBTITLE'] ?? 'F
 $plansTitle = htmlspecialchars($appConfig['PLANS_TITLE'] ?? 'Sample stone plans', ENT_QUOTES, 'UTF-8');
 $plansSubtitle = htmlspecialchars($appConfig['PLANS_SUBTITLE'] ?? 'Explore premium stones designed for different goals: quick returns, compounding growth, and long-term power.', ENT_QUOTES, 'UTF-8');
 $ctaTitle = htmlspecialchars($appConfig['CTA_TITLE'] ?? 'Launch your BitW journey with a single daily login.', ENT_QUOTES, 'UTF-8');
-
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $APP_NAME ?> — <?= $APP_ALIAS ?></title>
     <meta name="description" content="<?= $APP_NAME ?> (<?= $APP_ALIAS ?>) — A daily login mining economy and wallet-driven digital wealth system.">
-    <link rel="stylesheet" href="assets/css/bitw.css">
+    
+    <!-- Design Utilities Bundle -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brandBg: '#050712',
+                        brandSurface: '#091220',
+                        brandSurfaceAlt: '#0f1a2d',
+                        brandAccent: '#0df4ff',
+                        brandAccentDim: 'rgba(13, 244, 255, 0.12)',
+                        brandPurple: '#7e4dff',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-    :root{--bg:#050712;--surface:#091220;--surface-alt:#0f1a2d;--muted:#97a6c1;--text:#e4edf8;--accent:#0df4ff;--accent2:#7e4dff;--border:rgba(255,255,255,0.08)}
-    *{box-sizing:border-box}
-    body{margin:0;background:#020409;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-    body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at top left,rgba(13,244,255,0.12),transparent 20%),radial-gradient(circle at bottom right,rgba(126,77,255,0.12),transparent 18%);pointer-events:none}
-    .container{max-width:1200px;margin:0 auto;padding:32px}
-    .header{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:10px 0}
-    .brand{display:flex;align-items:center;gap:14px}
-    .logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:800;color:#020c14;letter-spacing:0.04em;box-shadow:0 24px 80px rgba(13,244,255,0.12)}
-    .brand-text{display:grid;line-height:1}
-    .brand-text h1{margin:0;font-size:20px}
-    .brand-text p{margin:2px 0 0;color:var(--muted);font-size:13px}
-    .nav{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
-    .nav a{color:var(--muted);text-decoration:none;font-size:14px;padding:10px 14px;border-radius:12px;transition:all .18s}
-    .nav a:hover{color:#fff;background:rgba(255,255,255,0.06)}
-    .hero{display:grid;grid-template-columns:1.1fr 0.9fr;gap:36px;align-items:center;padding:60px 0}
-    .hero-left{max-width:620px}
-    .kicker{display:inline-flex;padding:10px 16px;border-radius:999px;background:rgba(13,244,255,0.12);color:var(--accent);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;font-size:12px}
-    .hero-left h2{font-size:48px;line-height:1.05;margin:22px 0 18px;color:#ffffff}
-    .hero-left p{font-size:17px;line-height:1.8;color:var(--muted);max-width:640px;margin-bottom:30px}
-    .cta{display:flex;flex-wrap:wrap;gap:14px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 22px;border-radius:14px;font-weight:700;text-decoration:none;transition:transform .18s,box-shadow .18s}
-    .btn:hover{transform:translateY(-1px)}
-    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#020d15;box-shadow:0 20px 60px rgba(13,244,255,0.18)}
-    .btn-secondary{border:1px solid rgba(255,255,255,0.12);color:var(--text);background:rgba(255,255,255,0.03)}
-    .hero-right{position:relative;padding:32px;border-radius:28px;background:rgba(15,26,45,0.95);border:1px solid var(--border);backdrop-filter:blur(16px);box-shadow:0 40px 120px rgba(0,0,0,0.35)}
-    .hero-card{display:grid;gap:20px}
-    .hero-card span{font-size:13px;text-transform:uppercase;letter-spacing:0.14em;color:var(--accent)}
-    .hero-card h3{margin:0;font-size:28px;line-height:1.15}
-    .hero-card p{margin:0;color:var(--muted);line-height:1.75}
-    .hero-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
-    .hero-meta div{padding:18px;border:1px solid rgba(255,255,255,0.08);border-radius:20px;background:rgba(255,255,255,0.03)}
-    .hero-meta strong{display:block;font-size:18px;color:#fff;margin-bottom:6px}
-    .section-title{display:flex;justify-content:space-between;align-items:center;margin:72px 0 24px;gap:16px}
-    .section-title h2{margin:0;font-size:32px}
-    .section-title p{margin:0;color:var(--muted);max-width:640px}
-    .grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
-    .feature-card{padding:28px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06)}
-    .feature-card h3{margin:0 0 12px;font-size:20px}
-    .feature-card p{margin:0;color:var(--muted);line-height:1.75}
-    .plan-card{padding:28px;border-radius:24px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
-    .plan-card h3{margin:0 0 10px;font-size:22px}
-    .plan-value{font-size:34px;font-weight:800;color:#fff;margin:12px 0}
-    .plan-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:14px;margin-top:18px}
-    .plan-cta{margin-top:24px}
-    .plan-cta .btn{width:100%}
-    .footer{padding:38px 0 18px;border-top:1px solid rgba(255,255,255,0.06);color:var(--muted);font-size:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-    .footer strong{color:#fff}
-    .footer-note{max-width:620px}
-    @media(max-width:1040px){.hero{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.hero-right{padding:24px}}
-    @media(max-width:760px){.container{padding:24px}.nav{justify-content:center}.section-title{flex-direction:column;align-items:flex-start}.grid-3{grid-template-columns:1fr}.hero-left h2{font-size:36px}.hero-right{padding:24px}}
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(9, 18, 32, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.06); }
+        .glow-mesh { background: radial-gradient(circle at top left, rgba(13, 244, 255, 0.08), transparent 25%), radial-gradient(circle at bottom right, rgba(126, 77, 255, 0.08), transparent 25%); }
     </style>
 </head>
-<body>
-<div class="container">
-<header class="header">
-<div class="brand">
-    <div class="logo">B</div>
-    <div class="brand-text">
-        <h1><?= $APP_NAME ?></h1>
-        <p><?= $APP_ALIAS ?> — <?= $tagline ?></p>
-    </div>
-</div>
-<nav class="nav">
-    <a href="#features">Features</a>
-    <a href="#plans">Plans</a>
-    <a href="#how-it-works">How it Works</a>
-    <a href="login.php">Login</a>
-    <a class="btn btn-primary" href="register.php">Get Started</a>
-</nav>
-</header>
+<body class="bg-brandBg text-[#e4edf8] min-h-screen relative glow-mesh antialiased selection:bg-brandAccent selection:text-black">
 
-<main class="hero">
-<div class="hero-background"></div>
-<div class="hero-left">
-    <div class="kicker">Daily login yields. Stone-powered economy.</div>
-    <h2><?= $heroTitle ?></h2>
-    <p class="lead"><?= $heroDescription ?></p>
-    <div class="cta">
-        <a class="btn btn-primary" href="register.php">Join BitW</a>
-        <a class="btn btn-secondary" href="#features">Explore Features</a>
-    </div>
-</div>
+    <!-- NAVIGATION HEADER BAR -->
+    <header class="sticky top-0 z-50 bg-brandBg/60 backdrop-blur-md border-b border-white/5 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            <a href="#" class="flex items-center gap-3.5 group">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-brandAccent to-brandPurple flex items-center justify-center font-extrabold text-[#020c14] text-lg tracking-wider transition-transform group-hover:scale-[1.03] duration-300 shadow-lg shadow-brandAccent/10">
+                    <?= substr($APP_ALIAS, 0, 1) ?>
+                </div>
+                <div class="grid leading-tight">
+                    <span class="text-base font-bold text-white tracking-tight"><?= $APP_NAME ?></span>
+                    <span class="text-xs text-[#97a6c1]/80 font-medium"><?= $APP_ALIAS ?> • <?= $tagline ?></span>
+                </div>
+            </a>
+            
+            <nav class="hidden md:flex items-center gap-1.5">
+                <a href="#features" class="text-sm font-medium text-[#97a6c1] hover:text-white px-3.5 py-2 rounded-xl hover:bg-white/5 transition-all">Features</a>
+                <a href="#how-it-works" class="text-sm font-medium text-[#97a6c1] hover:text-white px-3.5 py-2 rounded-xl hover:bg-white/5 transition-all">How it Works</a>
+                <a href="#plans" class="text-sm font-medium text-[#97a6c1] hover:text-white px-3.5 py-2 rounded-xl hover:bg-white/5 transition-all">Plans</a>
+            </nav>
 
-<aside class="hero-right">
-    <div class="hero-card">
-        <span>Featured at launch</span>
-        <h3>Stone mining meets smart finance</h3>
-        <p>Mine daily, collect rewards, and grow your balance with modular investment stones. Every login unlocks yield potential.</p>
-        <div class="hero-meta">
-            <div>
-                <strong>Daily Yield</strong>
-                <span>Earn from every active plan</span>
-            </div>
-            <div>
-                <strong>Wallet Control</strong>
-                <span>Deposit, withdraw, and audit with confidence</span>
+            <div class="flex items-center gap-3">
+                <a href="login.php" class="text-sm font-semibold text-white/90 hover:text-white px-4 py-2.5 rounded-xl hover:bg-white/5 transition-all">Login</a>
+                <a href="register.php" class="px-5 py-2.5 bg-gradient-to-r from-brandAccent to-brandPurple hover:from-brandAccent hover:to-brandAccent text-[#020d15] text-sm font-bold rounded-xl transition-all shadow-md shadow-brandAccent/10 hover:shadow-brandAccent/20 hover:-translate-y-0.5">
+                    Get Started
+                </a>
             </div>
         </div>
-    </div>
-</aside>
-</main>
+    </header>
 
-<section id="features" class="section-title">
-    <div>
-        <h2>Designed for the modern digital economy</h2>
-        <p><?= $featuresSubtitle ?></p>
-    </div>
-</section>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 space-y-24">
+        
+        <!-- HERO SEGMENT HERO CROSSGRID -->
+        <section class="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brandAccentDim border border-brandAccent/20 text-brandAccent text-xs font-bold uppercase tracking-wider">
+                    <i class="bx bx-bolt text-sm animate-pulse"></i> Daily login yields. Stone-powered economy.
+                </div>
+                <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.1] text-balance">
+                    <?= $heroTitle ?>
+                </h2>
+                <p class="text-base sm:text-lg text-[#97a6c1] leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                    <?= $heroDescription ?>
+                </p>
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                    <a href="register.php" class="px-7 py-4 bg-gradient-to-r from-brandAccent to-brandPurple text-[#020d15] text-base font-bold rounded-xl transition-all shadow-xl shadow-brandAccent/10 hover:shadow-brandAccent/20 hover:-translate-y-0.5">
+                        Join <?= $APP_ALIAS ?> Network
+                    </a>
+                    <a href="#features" class="px-7 py-4 border border-white/10 hover:border-white/20 text-white text-base font-semibold rounded-xl bg-white/[0.02] hover:bg-white/[0.05] transition-all">
+                        Explore Features
+                    </a>
+                </div>
+            </div>
 
-<div class="grid-3">
-    <div class="feature-card">
-        <h3>Daily Mining Engine</h3>
-        <p>Log in each day to activate mining yield. Miss a day and only that day’s reward is lost—your plan remains active.</p>
-    </div>
-    <div class="feature-card">
-        <h3>Stone Investment Plans</h3>
-        <p>Choose from mythic stones like Astral Shard and Titan Ember, each with unique yield, duration, and engagement rewards.</p>
-    </div>
-    <div class="feature-card">
-        <h3>Secure Wallet Hub</h3>
-        <p>Manage deposits, withdrawals, and transactions in one dashboard built for clarity and auditability.</p>
-    </div>
-</div>
+            <!-- ASIDE INTERACTIVE HERO CAPTURE PREVIEW -->
+            <div class="lg:col-span-5 relative group">
+                <div class="absolute -inset-1 rounded-3xl bg-gradient-to-r from-brandAccent/30 to-brandPurple/30 blur-xl opacity-30 group-hover:opacity-40 transition duration-1000"></div>
+                <aside class="relative glass rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-4">
+                        <span class="text-xs font-bold uppercase tracking-widest text-brandAccent flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 bg-brandAccent rounded-full animate-ping"></span> Featured Launch Matrix
+                        </span>
+                        <i class="bx bx-intersect text-xl text-brandPurple"></i>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Stone mining meets smart finance</h3>
+                        <p class="text-sm text-[#97a6c1] leading-relaxed">
+                            Mine daily, collect modular rewards, and grow balances with programmatic investment stones. Every unique login cycle claims active parameters.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 pt-2">
+                        <div class="p-4 border border-white/5 rounded-2xl bg-white/[0.01] hover:bg-white/[0.03] transition-colors">
+                            <strong class="block text-lg font-bold text-white tracking-tight">Daily Yield</strong>
+                            <span class="text-xs text-[#97a6c1]">Earn from active plans</span>
+                        </div>
+                        <div class="p-4 border border-white/5 rounded-2xl bg-white/[0.01] hover:bg-white/[0.03] transition-colors">
+                            <strong class="block text-lg font-bold text-white tracking-tight">Total Control</strong>
+                            <span class="text-xs text-[#97a6c1]">Auditable wallet hub</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
 
-<section id="how-it-works" class="section-title">
-    <div>
-        <h2><?= $howItWorksTitle ?></h2>
-        <p><?= $howItWorksSubtitle ?></p>
-    </div>
-</section>
+        <!-- CORE FEATURES SECTION GRID -->
+        <section id="features" class="space-y-10">
+            <div class="max-w-3xl space-y-3 text-center md:text-left">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Designed for the modern digital economy</h2>
+                <p class="text-sm sm:text-base text-[#97a6c1] leading-relaxed"><?= $featuresSubtitle ?></p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-brandAccent/20 transition-all duration-300 bg-gradient-to-b from-white/[0.02] to-transparent group">
+                    <div class="w-10 h-10 rounded-xl bg-brandAccentDim text-brandAccent flex items-center justify-center mb-5 group-hover:bg-brandAccent group-hover:text-black transition-all">
+                        <i class="bx bx-cube-alt text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2 tracking-tight">Daily Mining Engine</h3>
+                    <p class="text-sm text-[#97a6c1] leading-relaxed">Log in each day to activate mining yield. Miss a day and only that day’s reward is lost—your base plan remains active.</p>
+                </div>
+                <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-brandPurple/20 transition-all duration-300 bg-gradient-to-b from-white/[0.02] to-transparent group">
+                    <div class="w-10 h-10 rounded-xl bg-brandPurple/10 text-brandPurple flex items-center justify-center mb-5 group-hover:bg-brandPurple group-hover:text-white transition-all">
+                        <i class="bx bx-diamond text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2 tracking-tight">Stone Investment Plans</h3>
+                    <p class="text-sm text-[#97a6c1] leading-relaxed">Choose from mythic stone configurations like Astral Shard and Titan Ember, each with unique yield models and durations.</p>
+                </div>
+                <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 hover:border-brandAccent/20 transition-all duration-300 bg-gradient-to-b from-white/[0.02] to-transparent group">
+                    <div class="w-10 h-10 rounded-xl bg-brandAccentDim text-brandAccent flex items-center justify-center mb-5 group-hover:bg-brandAccent group-hover:text-black transition-all">
+                        <i class="bx bx-wallet text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2 tracking-tight">Secure Wallet Hub</h3>
+                    <p class="text-sm text-[#97a6c1] leading-relaxed">Manage asset distributions, deposits, and verification parameters inside one clean dashboard pipeline.</p>
+                </div>
+            </div>
+        </section>
 
-<div class="grid-3" style="margin-bottom:40px">
-    <div class="feature-card">
-        <h3>Step 1</h3>
-        <p>Create your account and activate your first plan in minutes—no complex onboarding, just a fast start.</p>
-    </div>
-    <div class="feature-card">
-        <h3>Step 2</h3>
-        <p>Return each day to claim mining rewards and keep your streak alive. Daily engagement grows your stone yield.</p>
-    </div>
-    <div class="feature-card">
-        <h3>Step 3</h3>
-        <p>Scale with new stone plans, watch your wallet balance rise, and move up the rank tiers as you stay active.</p>
-    </div>
-</div>
+        <!-- PIPELINE WORKFLOW PIPELINE HOW IT WORKS -->
+        <section id="how-it-works" class="space-y-10">
+            <div class="max-w-3xl space-y-3 text-center md:text-left">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight"><?= $howItWorksTitle ?></h2>
+                <p class="text-sm sm:text-base text-[#97a6c1] leading-relaxed"><?= $howItWorksSubtitle ?></p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6 relative">
+                <div class="p-6 rounded-2xl border border-white/5 bg-white/[0.01] relative space-y-3">
+                    <span class="text-xs font-mono font-bold text-brandAccent uppercase tracking-widest bg-brandAccentDim px-2.5 py-1 rounded">Step 01</span>
+                    <h3 class="text-base font-bold text-white tracking-tight">Establish Account Matrix</h3>
+                    <p class="text-sm text-[#97a6c1] leading-relaxed">Create your account architecture and activate your first stone tier config in minutes with direct onboarding parameters.</p>
+                </div>
+                <div class="p-6 rounded-2xl border border-white/5 bg-white/[0.01] relative space-y-3">
+                    <span class="text-xs font-mono font-bold text-brandPurple uppercase tracking-widest bg-brandPurple/10 px-2.5 py-1 rounded">Step 02</span>
+                    <h3 class="text-base font-bold text-white tracking-tight">Activate Daily Cycles</h3>
+                    <p class="text-sm text-[#97a6c1] leading-relaxed">Return each day to claim resource mining returns and preserve parameters. Consistent engagement triggers steady operations.</p>
+                </div>
+                <div class="p-6 rounded-2xl border border-white/5 bg-white/[0.01] relative space-y-3">
+                    <span class="text-xs font-mono font-bold text-brandAccent uppercase tracking-widest bg-brandAccentDim px-2.5 py-1 rounded">Step 03</span>
+                    <h3 class="text-base font-bold text-white tracking-tight">Scale Resource Portfolios</h3>
+                    <p class="text-sm text-[#97a6c1] leading-relaxed">Scale with compounding dynamic options, audit cash adjustments, and step up performance rankings safely over time.</p>
+                </div>
+            </div>
+        </section>
 
-<section id="plans" class="section-title">
-    <div>
-        <h2><?= $plansTitle ?></h2>
-        <p><?= $plansSubtitle ?></p>
-    </div>
-</section>
+        <!-- STONE PLANS MATRIX TARGET SELECTION -->
+        <section id="plans" class="space-y-10">
+            <div class="max-w-3xl space-y-3 text-center md:text-left">
+                <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight"><?= $plansTitle ?></h2>
+                <p class="text-sm sm:text-base text-[#97a6c1] leading-relaxed"><?= $plansSubtitle ?></p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Obsidian Stone -->
+                <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 flex flex-col justify-between hover:scale-[1.01] transition-transform bg-gradient-to-b from-white/[0.02] to-transparent">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white tracking-tight">Obsidian Stone</h3>
+                            <span class="text-[10px] font-bold tracking-wider uppercase text-[#97a6c1] bg-white/5 px-2 py-0.5 rounded">Tier 1</span>
+                        </div>
+                        <div class="text-3xl font-sans font-extrabold text-white tracking-tight">Template: ₦12,500</div>
+                        <p class="text-xs text-[#97a6c1] leading-relaxed">Starter plan optimized with solid daily multipliers and fast completion boundaries for early-stage miners.</p>
+                        <div class="flex items-center justify-between text-xs font-medium text-[#97a6c1] border-t border-white/5 pt-4">
+                            <span class="flex items-center gap-1"><i class="bx bx-trending-up text-brandAccent"></i> Yield 9%</span>
+                            <span class="flex items-center gap-1"><i class="bx bx-time text-brandPurple"></i> 12 Days</span>
+                        </div>
+                    </div>
+                    <div class="pt-6">
+                        <a href="register.php" class="block w-full text-center py-2.5 border border-white/10 hover:border-brandAccent/40 bg-white/[0.02] hover:bg-brandAccent hover:text-black font-bold text-xs text-white rounded-xl transition-all">Activate Configuration</a>
+                    </div>
+                </div>
 
-<div class="grid-3">
-    <div class="plan-card">
-        <h3>Obsidian Stone</h3>
-        <div class="plan-value">₦12,500</div>
-        <p>Starter plan with solid daily yield and fast completion for early-stage miners.</p>
-        <div class="plan-meta"><span>Yield 9%</span><span>Duration 12 days</span></div>
-        <div class="plan-cta"><a class="btn btn-primary" href="register.php">Activate</a></div>
-    </div>
-    <div class="plan-card">
-        <h3>Astral Shard</h3>
-        <div class="plan-value">₦25,000</div>
-        <p>Balanced plan for steady growth and daily yield. Great for users who want consistency.</p>
-        <div class="plan-meta"><span>Yield 14%</span><span>Duration 18 days</span></div>
-        <div class="plan-cta"><a class="btn btn-primary" href="register.php">Activate</a></div>
-    </div>
-    <div class="plan-card">
-        <h3>Titan Ember</h3>
-        <div class="plan-value">₦45,000</div>
-        <p>High-tier stone for experienced users seeking premium yield and long-term rewards.</p>
-        <div class="plan-meta"><span>Yield 18%</span><span>Duration 24 days</span></div>
-        <div class="plan-cta"><a class="btn btn-primary" href="register.php">Activate</a></div>
-    </div>
-</div>
+                <!-- Astral Shard -->
+                <div class="glass p-6 sm:p-8 rounded-2xl border border-brandPurple/30 flex flex-col justify-between hover:scale-[1.01] transition-transform relative bg-gradient-to-b from-brandPurple/[0.03] to-transparent shadow-lg shadow-brandPurple/5">
+                    <div class="absolute top-0 right-6 transform -translate-y-1/2 bg-brandPurple text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full shadow-md">Popular</div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white tracking-tight">Astral Shard</h3>
+                            <span class="text-[10px] font-bold tracking-wider uppercase text-brandPurple bg-brandPurple/10 px-2 py-0.5 rounded">Tier 2</span>
+                        </div>
+                        <div class="text-3xl font-sans font-extrabold text-white tracking-tight">Template: ₦25,000</div>
+                        <p class="text-xs text-[#97a6c1] leading-relaxed">Balanced strategy mapping layout for steady system acceleration. Built for miners targeting predictable compounding values.</p>
+                        <div class="flex items-center justify-between text-xs font-medium text-[#97a6c1] border-t border-white/5 pt-4">
+                            <span class="flex items-center gap-1"><i class="bx bx-trending-up text-brandAccent"></i> Yield 14%</span>
+                            <span class="flex items-center gap-1"><i class="bx bx-time text-brandPurple"></i> 18 Days</span>
+                        </div>
+                    </div>
+                    <div class="pt-6">
+                        <a href="register.php" class="block w-full text-center py-2.5 bg-gradient-to-r from-brandAccent to-brandPurple text-[#020d15] font-bold text-xs rounded-xl hover:opacity-90 transition-all shadow-md">Activate Configuration</a>
+                    </div>
+                </div>
 
-<section class="bottom-cta">
-    <div class="bottom-cta-content">
-        <div>
-            <span>Ready to power up?</span>
-            <h2><?= $ctaTitle ?></h2>
+                <!-- Titan Ember -->
+                <div class="glass p-6 sm:p-8 rounded-2xl border border-white/5 flex flex-col justify-between hover:scale-[1.01] transition-transform bg-gradient-to-b from-white/[0.02] to-transparent">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-white tracking-tight">Titan Ember</h3>
+                            <span class="text-[10px] font-bold tracking-wider uppercase text-[#97a6c1] bg-white/5 px-2 py-0.5 rounded">Tier 3</span>
+                        </div>
+                        <div class="text-3xl font-sans font-extrabold text-white tracking-tight">Template: ₦45,000</div>
+                        <p class="text-xs text-[#97a6c1] leading-relaxed">High-tier stone allocations configured for advanced miners seeking premium yields and higher long-term payouts.</p>
+                        <div class="flex items-center justify-between text-xs font-medium text-[#97a6c1] border-t border-white/5 pt-4">
+                            <span class="flex items-center gap-1"><i class="bx bx-trending-up text-brandAccent"></i> Yield 18%</span>
+                            <span class="flex items-center gap-1"><i class="bx bx-time text-brandPurple"></i> 24 Days</span>
+                        </div>
+                    </div>
+                    <div class="pt-6">
+                        <a href="register.php" class="block w-full text-center py-2.5 border border-white/10 hover:border-brandAccent/40 bg-white/[0.02] hover:bg-brandAccent hover:text-black font-bold text-xs text-white rounded-xl transition-all">Activate Configuration</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PERSISTENT FOOTER ROW INVITATION CTA CARD -->
+        <section class="relative rounded-3xl overflow-hidden border border-white/5 bg-gradient-to-r from-brandSurface to-brandSurfaceAlt p-8 sm:p-12 text-center md:text-left shadow-2xl">
+            <div class="absolute inset-0 bg-radial-gradient from-brandAccent/5 to-transparent pointer-events-none"></div>
+            <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-8">
+                <div class="space-y-3">
+                    <span class="text-xs font-bold text-brandAccent uppercase tracking-wider">Ready to power up?</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white tracking-tight max-w-xl text-balance"><?= $ctaTitle ?></h2>
+                </div>
+                <a href="register.php" class="whitespace-nowrap self-center md:self-auto px-7 py-4 bg-gradient-to-r from-brandAccent to-brandPurple text-[#020d15] text-base font-bold rounded-xl transition-all shadow-lg hover:shadow-brandAccent/20 hover:-translate-y-0.5">
+                    Start Mining Today
+                </a>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- METRIC BASE FOOTER MATRIX -->
+    <footer class="border-t border-white/5 bg-brandBg mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row justify-between items-center gap-6 text-xs text-[#97a6c1]">
+            <div class="max-w-xl text-center sm:text-left leading-relaxed">
+                <strong class="text-white font-semibold"><?= $APP_NAME ?></strong> — A modular fintech infrastructure framework operating system elements across session yields, asset configuration stone layers, rank tiers, and ledger tools.
+            </div>
+            <div class="whitespace-nowrap font-mono text-slate-500">
+                © <?= date('Y') ?> <?= $APP_NAME ?>. All rights reserved.
+            </div>
         </div>
-        <a class="btn btn-primary btn-cta" href="register.php">Start Mining Today</a>
-    </div>
-</section>
+    </footer>
 
-<footer class="footer">
-    <div class="footer-note"><strong><?= $APP_NAME ?></strong> — a modular fintech experience built around daily mining, stone plans, rank progression, and secure wallet control.</div>
-    <div>© <?= date('Y') ?> <?= $APP_NAME ?>. All rights reserved.</div>
-</footer>
-</div>
 </body>
 </html>

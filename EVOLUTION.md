@@ -26,9 +26,26 @@ This document tracks the architectural and mathematical evolution of the BitW So
 - **Verification:** Only verified or admin posts appear in the main feed, maintaining high quality.
 - **Premium:** Subscription infrastructure to monetize advanced market participation.
 
+## Evolution 2.0: Gamification & Scarcity
+
+### 1. Strategic Scarcity (Completed)
+**Objective:** Drive continuous reinvestment through purchasing power limits and expiration.
+- **Expiration:** Mining plans now automatically "complete" once the `end_date` is reached.
+- **Limits:** Added `purchase_limit` to plans to prevent whale domination and encourage diversification.
+
+### 2. Lotto-Sovereign Engine (Completed)
+**Objective:** A gamified "Lucky Number" system designed for platform sustainability.
+- **Algorithm:** Picks numbers that are either unpicked (Missing) or have the lowest real-money liability.
+- **Demo Mode:** Encourages participation by allowing demo users to "win" more frequently to drive real conversion.
+
+### 3. Social Prediction Market (Completed)
+**Objective:** P2P betting markets created by premium users.
+- **Commission:** The platform takes a customizable percentage of the total pool.
+- **Settlement:** High-integrity distribution of the pool to winning predictors.
+
 ---
 
 ## Local Testing Instructions
-1. **Database:** Run `migrations/evolution_1_0.sql` to update your schema.
-2. **Seeding:** Run `core/seeders/SystemSeeder.php` to populate initial sovereign constants.
-3. **Core:** The `core/Settings.php` class is now the single source of truth for all platform variables.
+1. **Database:** Run `migrations/evolution_1_0.sql` AND `migrations/evolution_2_0.sql`.
+2. **Seeding:** Run `core/seeders/SystemSeeder.php`.
+3. **Core:** Use `LottoEngine.php` for the game logic and `PredictionMarket.php` for P2P betting.

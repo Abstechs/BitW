@@ -13,6 +13,12 @@ function claimMining($mining_id) {
         $stmt = $pdo->prepare("SELECT * FROM user_mining WHERE id = ? AND status = 'active'");
         $stmt->execute([$mining_id]);
         $mining = $stmt->fetch();
+
+        // Check for expiration
+        if (isset($mining['end_date']) && strtotime($mining['end_date']) < time()) {
+            $pdo->prepare("UPDATE user_mining SET status = 'completed' WHERE id = ?")->execute([$mining_id]);
+            return ['success' => false, 'message' => 'This mining session has expired.'];
+        }
         
         if (!$mining) {
             return ['success' => false, 'message' => 'Mining session not found'];

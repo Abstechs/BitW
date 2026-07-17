@@ -253,4 +253,30 @@ if (!isset($pageTitle)) {
         }
     </style>
 </head>
-<body class="min-h-screen p-8">
+<body class="min-h-screen">
+    <!-- Sovereign Navigation Bar -->
+    <nav class="sticky top-0 z-50 glass-card m-4 px-6 py-4 flex items-center justify-between border-b border-white/5">
+        <div class="flex items-center gap-8">
+            <a href="dashboard.php" class="text-xl font-bold tracking-tighter neon-text-gold">BITW</a>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="dashboard.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Dashboard</a>
+                <a href="plans.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Mining Stones</a>
+                <a href="trading.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Marketplace</a>
+                <a href="lotto.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Lotto-Sovereign</a>
+                <a href="predictions.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Social Betting</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="wallet.php" class="hidden sm:flex items-center gap-2 bg-white/5 px-4 py-2 rounded-2xl border border-white/5 hover:bg-white/10 transition-all">
+                <i class='bx bx-wallet text-blue-400'></i>
+                <span class="text-xs font-bold tracking-wider uppercase" id="navBalance">₦ 0.00</span>
+            </a>
+            <a href="settings.php" class="icon-box w-10 h-10 rounded-xl hover:bg-white/10 transition-all">
+                <i class='bx bx-cog'></i>
+            </a>
+            <a href="logout.php" class="icon-box w-10 h-10 rounded-xl hover:bg-rose-500/20 text-rose-400 transition-all">
+                <i class='bx bx-log-out'></i>
+            </a>
+        </div>
+    </nav>
+    <main class="p-8">

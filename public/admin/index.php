@@ -17,6 +17,7 @@ require_once __DIR__ . '/includes/admin_header.php';
             <a href="plans.php" class="btn-secondary w-full">Manage Stone Plans</a>
             <a href="transactions.php" class="btn-secondary w-full">View Transactions</a>
             <a href="users.php" class="btn-secondary w-full">Manage Users</a>
+            <a href="sovereign-settings.php" class="btn-secondary w-full bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 border border-purple-500/30">Sovereign Engine Settings</a>
             <a href="notifications.php" class="btn-secondary w-full bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-400 border border-cyan-500/30">Send System Notification</a>
         </div>
     </div>

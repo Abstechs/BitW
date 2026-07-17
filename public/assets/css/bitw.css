@@ -18,3 +18,57 @@ body {
     padding: 10px 15px;
     border-radius: 8px;
 }
+
+/* Sovereign Evolution UI Components */
+:root {
+    --accent-blue: #3b82f6;
+    --accent-purple: #8b5cf6;
+    --accent-gold: #f59e0b;
+    --glass-bg: rgba(17, 24, 39, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.neon-glow-blue {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    border: 1px solid rgba(59, 130, 246, 0.8);
+}
+
+.neon-glow-purple {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+    border: 1px solid rgba(139, 92, 246, 0.8);
+}
+
+.neon-text-gold {
+    color: var(--accent-gold);
+    text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+.lotto-number-input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.5rem;
+    letter-spacing: 0.5rem;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.prediction-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.chip-agree { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+.chip-disagree { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }

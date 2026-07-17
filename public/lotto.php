@@ -20,7 +20,14 @@ require_once __DIR__ . '/pages/header.php';
         <div>
             <p class="badge">Sovereign Gaming</p>
             <h1 class="text-3xl font-black text-white mt-2 tracking-tight">Lotto-Sovereign <span class="text-purple-500">2.0</span></h1>
-            <p class="text-sm text-slate-400">High-fidelity prediction matrix with native liquidity pools and automated settlement.</p>
+            <div class="flex items-center gap-4 mt-2">
+                <p class="text-sm text-slate-400">High-fidelity prediction matrix with native liquidity pools.</p>
+                <!-- Dual-Reality Switch -->
+                <div class="flex items-center gap-2 bg-slate-900/50 p-1 rounded-xl border border-white/5">
+                    <button id="real-mode-btn" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-purple-600 text-white transition-all">REAL</button>
+                    <button id="demo-mode-btn" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all">DEMO</button>
+                </div>
+            </div>
         </div>
         <div class="flex items-center gap-3">
             <div class="bg-slate-900/80 border border-white/5 rounded-2xl px-5 py-3 flex flex-col items-end">

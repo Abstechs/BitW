@@ -215,6 +215,11 @@ function updateUserPassword($user_id, $password) {
 
 function isLoggedIn() {
     global $pdo;
+    
+    // Trigger user-driven automated tasks
+    require_once __DIR__ . '/CronManager.php';
+    CronManager::triggerDailyTasks($pdo);
+
     if (!isset($_SESSION['user_id'])) {
         return false;
     }

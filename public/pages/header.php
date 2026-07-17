@@ -266,6 +266,7 @@ if (!isset($pageTitle)) {
                 <a href="trading.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Marketplace</a>
                 <a href="lotto.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Lotto-Sovereign</a>
                 <a href="predictions.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Social Betting</a>
+<a href="blog.php" class="text-sm font-medium hover:text-blue-400 transition-colors">Oracle News</a>
             </div>
         </div>
         <div class="flex items-center gap-4">

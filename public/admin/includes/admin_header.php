@@ -47,6 +47,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a class="admin-link<?= $currentPage === 'users.php' ? ' active' : '' ?>" href="users.php">Users</a>
             <a class="admin-link<?= $currentPage === 'settings.php' ? ' active' : '' ?>" href="settings.php">Settings</a>
 <a class="admin-link<?= $currentPage === 'sovereign-settings.php' ? ' active' : '' ?>" href="sovereign-settings.php">Sovereign Engine</a>
+<a class="admin-link<?= $currentPage === 'blog-editor.php' ? ' active' : '' ?>" href="blog-editor.php">Oracle CMS (Blog)</a>
             <a class="admin-link" href="../logout.php">Logout</a>
         </nav>
     </aside>

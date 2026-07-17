@@ -24,9 +24,10 @@ require_once __DIR__ . '/pages/header.php';
                 <p class="text-sm text-slate-400">High-fidelity prediction matrix with native liquidity pools.</p>
                 <!-- Dual-Reality Switch -->
                 <div class="flex items-center gap-2 bg-slate-900/50 p-1 rounded-xl border border-white/5">
-                    <button id="real-mode-btn" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-purple-600 text-white transition-all">REAL</button>
-                    <button id="demo-mode-btn" class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all">DEMO</button>
+                    <button type="button" onclick="switchLottoMode('real')" id="real-mode-btn" class="lotto-mode-btn px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-purple-600 text-white transition-all">REAL</button>
+                    <button type="button" onclick="switchLottoMode('demo')" id="demo-mode-btn" class="lotto-mode-btn px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all">DEMO</button>
                 </div>
+                <input type="hidden" id="lotto-mode" value="real">
             </div>
         </div>
         <div class="flex items-center gap-3">
@@ -164,6 +165,29 @@ require_once __DIR__ . '/pages/header.php';
 </div>
 
 <script>
+function switchLottoMode(mode) {
+    const realBtn = document.getElementById('real-mode-btn');
+    const demoBtn = document.getElementById('demo-mode-btn');
+    const modeInput = document.getElementById('lotto-mode');
+    const formCard = document.querySelector('.glass-card.border-t-4');
+    
+    modeInput.value = mode;
+    
+    if (mode === 'real') {
+        realBtn.classList.add('bg-purple-600', 'text-white');
+        realBtn.classList.remove('text-slate-500');
+        demoBtn.classList.remove('bg-blue-600', 'text-white');
+        demoBtn.classList.add('text-slate-500');
+        formCard.classList.replace('border-blue-600', 'border-purple-600');
+    } else {
+        demoBtn.classList.add('bg-blue-600', 'text-white');
+        demoBtn.classList.remove('text-slate-500');
+        realBtn.classList.remove('bg-purple-600', 'text-white');
+        realBtn.classList.add('text-slate-500');
+        formCard.classList.replace('border-purple-600', 'border-blue-600');
+    }
+}
+
 document.querySelectorAll('.digit-input').forEach((input, index, inputs) => {
     input.addEventListener('input', () => {
         if (input.value.length === 1 && index < inputs.length - 1) {

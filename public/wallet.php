@@ -50,6 +50,13 @@ require_once __DIR__ . '/pages/header.php';
                 <div class="space-y-4">
                     <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
                         <div class="flex items-center gap-3">
+                            <i class="bx bx-wallet text-emerald-400 text-xl"></i>
+                            <span class="text-sm font-bold">Main Balance</span>
+                        </div>
+                        <span class="font-mono text-sm">₦ <?= number_format($wallet['balance'], 2) ?></span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
+                        <div class="flex items-center gap-3">
                             <i class="bx bx-bolt text-yellow-400 text-xl"></i>
                             <span class="text-sm font-bold">Mining Wallet</span>
                         </div>

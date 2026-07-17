@@ -219,6 +219,8 @@ if ($useRankName) {
             <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all"><i class="bx bx-user-plus text-lg"></i> <?= htmlspecialchars($navReferrals) ?></a>
             <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all"><i class="bx bx-receipt text-lg"></i> <?= htmlspecialchars($navTransactions) ?></a>
             <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all"><i class="bx bx-money-withdraw text-lg"></i> <?= htmlspecialchars($navWithdraw) ?></a>
+<a href="lotto.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all"><i class="bx bx-dice-6 text-lg"></i> Lotto-Sovereign</a>
+<a href="predictions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all"><i class="bx bx-bullseye text-lg"></i> Social Betting</a>
             <a href="settings.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white transition-all"><i class="bx bx-cog text-lg"></i> <?= htmlspecialchars($navSettings) ?></a>
         </nav>
     </aside>
@@ -238,6 +240,8 @@ if ($useRankName) {
                 <a href="referrals.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-300"><i class="bx bx-user-plus text-lg"></i> <?= htmlspecialchars($navReferrals) ?></a>
                 <a href="transactions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-300"><i class="bx bx-receipt text-lg"></i> <?= htmlspecialchars($navTransactions) ?></a>
                 <a href="withdraw.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-300"><i class="bx bx-money-withdraw text-lg"></i> <?= htmlspecialchars($navWithdraw) ?></a>
+<a href="lotto.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-300"><i class="bx bx-dice-6 text-lg"></i> Lotto-Sovereign</a>
+<a href="predictions.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-300"><i class="bx bx-bullseye text-lg"></i> Social Betting</a>
                 <a href="settings.php" class="flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl text-slate-300"><i class="bx bx-cog text-lg"></i> <?= htmlspecialchars($navSettings) ?></a>
             </nav>
         </div>

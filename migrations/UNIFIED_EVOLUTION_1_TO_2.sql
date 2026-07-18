@@ -113,10 +113,10 @@ CREATE TABLE IF NOT EXISTS wallet_conversions (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
--- 7. Schema Enhancements
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS purchase_limit INT DEFAULT 0;
-ALTER TABLE plans ADD COLUMN IF NOT EXISTS cooldown_hours INT DEFAULT 0;
-ALTER TABLE trade_assets ADD COLUMN IF NOT EXISTS volatility_constant DECIMAL(5,4) DEFAULT 0.0200;
-ALTER TABLE trade_assets ADD COLUMN IF NOT EXISTS mean_reversion_speed DECIMAL(5,4) DEFAULT 0.0500;
-ALTER TABLE trade_assets ADD COLUMN IF NOT EXISTS gravity_price DECIMAL(15,2);
-ALTER TABLE trade_assets ADD COLUMN IF NOT EXISTS liquidity_depth DECIMAL(20,2) DEFAULT 1000000.00;
+-- 7. Schema Enhancements (Corrected standard MySQL syntax)
+ALTER TABLE plans ADD COLUMN purchase_limit INT DEFAULT 0;
+ALTER TABLE plans ADD COLUMN cooldown_hours INT DEFAULT 0;
+ALTER TABLE trade_assets ADD COLUMN volatility_constant DECIMAL(5,4) DEFAULT 0.0200;
+ALTER TABLE trade_assets ADD COLUMN mean_reversion_speed DECIMAL(5,4) DEFAULT 0.0500;
+ALTER TABLE trade_assets ADD COLUMN gravity_price DECIMAL(15,2);
+ALTER TABLE trade_assets ADD COLUMN liquidity_depth DECIMAL(20,2) DEFAULT 1000000.00;

@@ -28,6 +28,16 @@ require_once __DIR__ . '/includes/admin_header.php';
             </div>
             
             <div class="space-y-6">
+                <!-- User Entry Threshold Control (Added for Custom Allocations) -->
+                <div class="space-y-2">
+                    <label class="form-label font-bold text-slate-200">Minimum Allocation Threshold (User Entry)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">₦</span>
+                        <input type="number" class="form-field pl-8 focus:ring-2 focus:ring-blue-500/20" value="200" min="100" step="50">
+                    </div>
+                    <p class="text-[10px] text-slate-500">The absolute lower boundary a user can stake per positional contract (e.g., ₦200 base level).</p>
+                </div>
+
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <label class="form-label mb-0 font-bold">Global Volatility Multiplier</label>

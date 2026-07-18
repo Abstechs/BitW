@@ -1,77 +1,45 @@
 <?php
+// core/Settings.php
 
-class AppSettings {
-    private static $settings = null;
-    private static $settingsFile = __DIR__ . '/../config/settings.php';
+class Settings {
+    private static $cache = [];
 
-    public static function load() {
-        if (self::$settings !== null) {
-            return self::$settings;
+    /**
+     * Get a system setting value by key.
+     */
+    public static function get($pdo, $key, $default = null) {
+        if (isset(self::$cache[$key])) {
+            return self::$cache[$key];
         }
 
-        if (!file_exists(self::$settingsFile)) {
-            self::initialize();
+        $stmt = $pdo->prepare("SELECT setting_value FROM system_settings WHERE setting_key = ?");
+        $stmt->execute([$key]);
+        $value = $stmt->fetchColumn();
+
+        if ($value === false) {
+            return $default;
         }
 
-        self::$settings = require self::$settingsFile;
-        if (!is_array(self::$settings)) {
-            self::$settings = [];
-        }
-        return self::$settings;
+        // Auto-decode JSON if applicable
+        $decoded = json_decode($value, true);
+        $finalValue = (json_last_error() === JSON_ERROR_NONE) ? $decoded : $value;
+        
+        self::$cache[$key] = $finalValue;
+        return $finalValue;
     }
 
-    public static function get($key, $default = null) {
-        self::load();
-        return self::$settings[$key] ?? $default;
-    }
-
-    public static function set($key, $value) {
-        self::load();
-        self::$settings[$key] = $value;
-        return self::save();
-    }
-
-    public static function all() {
-        self::load();
-        return self::$settings;
-    }
-
-    public static function save() {
-        $content = "<?php\n\nreturn [\n";
-        foreach (self::$settings as $key => $value) {
-            $escaped = var_export($value, true);
-            $content .= "    '" . str_replace("'", "\\'", $key) . "' => $escaped,\n";
-        }
-        $content .= "];\n";
-
-        return file_put_contents(self::$settingsFile, $content) !== false;
-    }
-
-    public static function initialize() {
-        $defaultSettings = [
-            'PAYSTACK_SECRET' => '',
-            'PAYSTACK_PUBLIC' => '',
-            'PAYSTACK_DEFAULT_ACCOUNT' => '3003728830',
-            'PAYSTACK_DEFAULT_BANK' => 'Kuda Bank',
-            'PAYSTACK_DEFAULT_ACCOUNT_NAME' => 'Abstech Integrated Services',
-            'MANUAL_DEPOSIT_ENABLED' => true,
-            'CRYPTO_DEPOSIT_ENABLED' => false,
-            'DEFAULT_PLAN_IMAGE' => '/assets/images/default-plan.svg'
-        ];
-
-        if (!is_dir(dirname(self::$settingsFile))) {
-            mkdir(dirname(self::$settingsFile), 0755, true);
-        }
-
-        $content = "<?php\n\nreturn [\n";
-        foreach ($defaultSettings as $key => $value) {
-            $content .= "    '" . str_replace("'", "\\'", $key) . "' => " . var_export($value, true) . ",\n";
-        }
-        $content .= "];\n";
-        file_put_contents(self::$settingsFile, $content);
-        self::$settings = $defaultSettings;
-        return self::$settings;
+    /**
+     * Set or update a system setting.
+     */
+    public static function set($pdo, $key, $value, $group = 'general', $description = '') {
+        $finalValue = is_array($value) ? json_encode($value) : $value;
+        
+        $stmt = $pdo->prepare("INSERT INTO system_settings (setting_key, setting_value, setting_group, description) 
+                               VALUES (?, ?, ?, ?) 
+                               ON DUPLICATE KEY UPDATE setting_value = ?, setting_group = ?, description = ?");
+        $stmt->execute([$key, $finalValue, $group, $description, $finalValue, $group, $description]);
+        
+        self::$cache[$key] = $value;
+        return true;
     }
 }
-
-AppSettings::load();

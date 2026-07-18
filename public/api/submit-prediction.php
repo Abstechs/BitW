@@ -68,8 +68,8 @@ try {
 
     // 5. Account Liquidity Sufficiency Verifications
     if ($mode === 'real') {
-        // Look up true spendable operational liquidity balance
-        $balanceStmt = $pdo->prepare("SELECT balance FROM users WHERE id = :id FOR UPDATE"); // Lock row row to prevent double-spending race conditions
+        // Look up true spendable operational liquidity balance inside dedicated wallets table
+        $balanceStmt = $pdo->prepare("SELECT balance FROM wallets WHERE user_id = :id FOR UPDATE");
         $balanceStmt->execute(['id' => $userId]);
         $userBalance = (int)($balanceStmt->fetchColumn() ?? 0);
 
@@ -86,8 +86,8 @@ try {
     $pdo->beginTransaction();
 
     if ($mode === 'real') {
-        // Deduct systemic liquidity bounds from account
-        $deductStmt = $pdo->prepare("UPDATE users SET balance = balance - :amount WHERE id = :id");
+        // Deduct systemic liquidity bounds from the correct wallets table layout
+        $deductStmt = $pdo->prepare("UPDATE wallets SET balance = balance - :amount WHERE user_id = :id");
         $deductStmt->execute(['amount' => $betAmount, 'id' => $userId]);
         
         // Log transaction hash reference to internal system ledger audit

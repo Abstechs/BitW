@@ -10,6 +10,14 @@ if (!isLoggedIn()) {
     exit;
 }
 
+// Fetch active markets from database
+$stmt = $pdo->query("SELECT pm.*, u.username as creator_name 
+                     FROM prediction_markets pm 
+                     JOIN users u ON pm.creator_id = u.id 
+                     WHERE pm.status = 'open' 
+                     ORDER BY pm.created_at DESC");
+$markets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 $pageTitle = 'Social Prediction Markets';
 require_once __DIR__ . '/pages/header.php';
 ?>
@@ -38,52 +46,57 @@ require_once __DIR__ . '/pages/header.php';
 
     <!-- Grid Layout -->
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <!-- Market Card -->
-        <div class="glass-card flex flex-col h-full border-t-4 border-blue-500 group">
-            <div class="p-6 flex-1 space-y-4">
-                <div class="flex justify-between items-start">
-                    <span class="text-[10px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400 px-2 py-1 rounded">Sports</span>
-                    <div class="flex items-center gap-1 text-rose-500 animate-pulse">
-                        <i class="bx bx-time-five"></i>
-                        <span class="text-[10px] font-bold">ENDS IN 04:20:15</span>
-                    </div>
-                </div>
-                
-                <h3 class="text-xl font-bold text-white leading-tight group-hover:text-blue-400 transition-colors">Arsenal will win against Chelsea in the upcoming London Derby</h3>
-                
-                <div class="flex items-center gap-3 py-2">
-                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/10">
-                        <i class="bx bx-user text-slate-400"></i>
-                    </div>
-                    <div class="text-xs">
-                        <p class="text-white font-bold">@PremiumFounder</p>
-                        <p class="text-slate-500">Verified Oracle</p>
-                    </div>
-                </div>
-
-                <div class="space-y-3 pt-2">
-                    <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
-                        <span>Total Liquidity</span>
-                        <span class="text-white">₦ 690,000.00</span>
-                    </div>
-                    <div class="h-3 w-full bg-slate-950 rounded-full overflow-hidden flex border border-white/5">
-                        <div class="bg-emerald-500 h-full" style="width: 65%"></div>
-                        <div class="bg-rose-500 h-full" style="width: 35%"></div>
-                    </div>
-                    <div class="flex justify-between text-[10px] font-bold">
-                        <span class="text-emerald-400">AGREE: 65%</span>
-                        <span class="text-rose-400">DISAGREE: 35%</span>
-                    </div>
-                </div>
+        <?php if (empty($markets)): ?>
+            <div class="col-span-full glass-card p-12 text-center text-slate-500">
+                <i class="bx bx-layer-minus text-5xl mb-4"></i>
+                <p>No active prediction markets found. Be the first to launch one!</p>
             </div>
+        <?php else: ?>
+            <?php foreach ($markets as $market): ?>
+                <div class="glass-card flex flex-col h-full border-t-4 border-blue-500 group">
+                    <div class="p-6 flex-1 space-y-4">
+                        <div class="flex justify-between items-start">
+                            <span class="text-[10px] font-black uppercase tracking-widest bg-blue-500/10 text-blue-400 px-2 py-1 rounded">Ecosystem</span>
+                            <div class="flex items-center gap-1 text-rose-500 animate-pulse">
+                                <i class="bx bx-time-five"></i>
+                                <span class="text-[10px] font-bold uppercase">Ends in <span id="timer-<?= $market['id'] ?>">--:--:--</span></span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-white leading-tight group-hover:text-blue-400 transition-colors"><?= htmlspecialchars($market['title']) ?></h3>
+                        
+                        <div class="flex items-center gap-3 py-2">
+                            <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-white/10">
+                                <i class="bx bx-user text-slate-400"></i>
+                            </div>
+                            <div class="text-xs">
+                                <p class="text-white font-bold">@<?= htmlspecialchars($market['creator_name']) ?></p>
+                                <p class="text-slate-500">Verified Oracle</p>
+                            </div>
+                        </div>
 
-            <div class="p-4 bg-white/5 border-t border-white/5 grid grid-cols-2 gap-3">
-                <button class="py-3 rounded-xl bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 text-xs font-black border border-emerald-500/20 transition-all">AGREE</button>
-                <button class="py-3 rounded-xl bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 text-xs font-black border border-rose-500/20 transition-all">DISAGREE</button>
-            </div>
-        </div>
+                        <div class="space-y-3 pt-2">
+                            <div class="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                <span>Total Liquidity</span>
+                                <span class="text-white">₦ <?= number_format($market['total_pool'], 2) ?></span>
+                            </div>
+                            <div class="h-3 w-full bg-slate-950 rounded-full overflow-hidden flex border border-white/5">
+                                <div class="bg-emerald-500 h-full" style="width: 50%"></div>
+                                <div class="bg-rose-500 h-full" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- Add more cards as needed -->
+                    <div class="p-4 bg-white/5 border-t border-white/5 grid grid-cols-2 gap-3">
+                        <button class="py-3 rounded-xl bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 text-xs font-black border border-emerald-500/20 transition-all"><?= htmlspecialchars($market['option_a']) ?></button>
+                        <button class="py-3 rounded-xl bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 text-xs font-black border border-rose-500/20 transition-all"><?= htmlspecialchars($market['option_b']) ?></button>
+                    </div>
+                </div>
+                <script>
+                    new SovereignTimer('timer-<?= $market['id'] ?>', '<?= $market['end_time'] ?>').start();
+                </script>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </div>
 

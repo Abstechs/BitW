@@ -17,6 +17,7 @@ if (!isset($pageTitle)) {
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="assets/js/SovereignPulse.js"></script>
     <script src="assets/js/NetworkGuard.js"></script>
+    <script src="assets/js/SovereignTimer.js"></script>
     <style>
         :root {
             color-scheme: dark;

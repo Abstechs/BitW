@@ -1,0 +1,32 @@
+bitw/
+│
+├── core/
+│   ├── database.php
+│   ├── auth.php
+│   ├── helpers.php
+│   ├── session.php
+│
+├── modules/
+│   ├── auth/
+│   ├── user/
+│   ├── admin/
+│   ├── wallet/
+│   ├── plans/
+│
+├── public/
+│   ├── index.php
+│   ├── login.php
+│   ├── register.php
+│   ├── dashboard.php
+│   ├── logout.php
+│   ├── assets/
+│
+├── api/
+│   ├── paystack-webhook.php
+│   ├── requery.php
+│
+├── config/
+│   ├── app.php
+│   ├── database.php
+│
+└── .htaccess (optional)

@@ -466,7 +466,6 @@ function switchLottoReality(mode) {
         riskWarningBadge.className = "text-[9px] font-black tracking-widest uppercase px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded border border-emerald-500/20";
     }
 
-    // Modern Toastify environment state change alert framework intercept
     Toastify({
         text: `Switched execution context to ${mode.toUpperCase()} environment successfully.`,
         duration: 3500,
@@ -490,7 +489,8 @@ function adjustDigitGridLength(targetLength) {
     document.querySelectorAll('[id^="len-btn-"]').forEach(btn => {
         btn.className = "py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all";
     });
-    document.getElementById(`len-btn-${targetLength}`).className = `py-2 rounded-lg text-xs font-bold ${activeColor} text-white shadow transition-all`;
+    const activeBtn = document.getElementById(`len-btn-${targetLength}`);
+    if (activeBtn) activeBtn.className = `py-2 rounded-lg text-xs font-bold ${activeColor} text-white shadow transition-all`;
 
     const gridWrapper = document.getElementById('digit-grid-wrapper');
     gridWrapper.innerHTML = '';
@@ -580,12 +580,11 @@ function initializePoolCountdown() {
 }
 
 // Global programmatic intercept layer processing active matrix stake submissions 
-// Global programmatic intercept layer processing active matrix stake submissions 
 document.getElementById('lottoExecutionForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Stop standard form redirection layout
+    e.preventDefault();
 
-    const minConfiguredStake = <?php echo $minAllocation; ?>;
-    const betVal = parseFloat(betAmountInput.value) || 0;
+    const minConfiguredStake = <?php echo $minAllocation ?? 100; ?>;
+    const betVal = parseFloat(betAmountInput ? betAmountInput.value : 0) || 0;
 
     if (betVal < minConfiguredStake) {
         Toastify({
@@ -598,28 +597,25 @@ document.getElementById('lottoExecutionForm').addEventListener('submit', functio
         return false;
     }
 
-    // Collect individual inputs out of the dynamic digit array matrix
-    const digitInputs = document.querySelectorAll('.digit-input');
+    // Capture the active form elements natively (natively packages sequence_digits[])
+    const formData = new FormData(this);
+    
+    // Explicitly enforce state overrides
+    formData.set('lotto_mode', currentRealityMode);
+    formData.set('prediction_length', currentLength);
+
+    // Build human-readable visual display string for notifications
     let sequenceStr = '';
-    digitInputs.forEach(input => {
+    document.querySelectorAll('.digit-input').forEach(input => {
         sequenceStr += input.value;
     });
 
-    // Build standard urlencoded payload layout using FormData
-    const formData = new FormData();
-    formData.append('csrf_token', this.querySelector('input[name="csrf_token"]').value);
-    formData.append('lotto_mode', currentRealityMode);
-    formData.append('prediction_length', currentLength);
-    formData.append('sequence', sequenceStr);
-    formData.append('amount', betVal);
-
-    // Execute remote server request matching traditional form POST architecture
     fetch(this.action, {
         method: 'POST',
         headers: {
-            'X-Requested-With': 'XMLHttpRequest' // Satisfies API direct access rules
+            'X-Requested-With': 'XMLHttpRequest'
         },
-        body: formData // Sent natively as multipart/form-data so $_POST populates correctly
+        body: formData
     })
     .then(res => res.json())
     .then(data => {
@@ -632,7 +628,6 @@ document.getElementById('lottoExecutionForm').addEventListener('submit', functio
                 style: { background: "linear-gradient(to right, #10b981, #059669)", borderRadius: "12px" }
             }).showToast();
 
-            // Refresh wallet element balances asynchronously if returned by API context
             if (data.new_balance !== undefined && currentRealityMode === 'real') {
                 const navWallet = document.getElementById('nav-wallet-display');
                 if (navWallet) {
@@ -640,9 +635,10 @@ document.getElementById('lottoExecutionForm').addEventListener('submit', functio
                 }
             }
 
-            // Flush interface state variables
-            betAmountInput.value = '';
-            document.getElementById('projected-win').innerText = '0.00';
+            if (betAmountInput) betAmountInput.value = '';
+            const projectedField = document.getElementById('projected-win');
+            if (projectedField) projectedField.innerText = '0.00';
+            
             adjustDigitGridLength(currentLength); 
         } else {
             Toastify({

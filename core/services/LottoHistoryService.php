@@ -20,22 +20,34 @@ class LottoHistoryService {
     }
 
     /**
-     * Retrieves the entire filtered history log for the current authenticated user context.
+     * Retrieves the entire filtered history log for the current authenticated user context,
+     * joining with lotto_draws to include winning numbers and release statuses.
      */
     public function getLedgerEntries(string $filterMode): array {
         try {
-            $query = "SELECT sequence, amount, mode, status, draw_date, created_at 
-                      FROM lotto_allocations 
-                      WHERE user_id = :user_id";
+            $query = "SELECT 
+                        a.sequence, 
+                        a.amount, 
+                        a.mode, 
+                        a.status, 
+                        a.draw_date, 
+                        a.created_at,
+                        d.lucky_number,
+                        d.is_released
+                      FROM lotto_allocations a
+                      LEFT JOIN lotto_draws d 
+                          ON a.draw_date = d.draw_date 
+                          AND CHAR_LENGTH(a.sequence) = d.drawing_length
+                      WHERE a.user_id = :user_id";
             
             $params = ['user_id' => $this->userId];
             
             if ($filterMode !== 'all') {
-                $query .= " AND mode = :mode";
+                $query .= " AND a.mode = :mode";
                 $params['mode'] = $filterMode;
             }
             
-            $query .= " ORDER BY created_at DESC";
+            $query .= " ORDER BY a.created_at DESC";
             
             $stmt = $this->pdo->prepare($query);
             $stmt->execute($params);

@@ -19,6 +19,45 @@ $filterMode = $historyService->getFilterMode($_GET);
 $ledgerEntries = $historyService->getLedgerEntries($filterMode);
 $stats = $historyService->getAggregatedStats();
 
+/**
+ * Renders standardized status badges based on entry state
+ */
+function renderStatusBadge(string $rawStatus, bool $isMobile = false): string {
+    $status = strtolower(trim($rawStatus));
+    $textSize = $isMobile ? 'text-[9px]' : 'text-[10px]';
+    $padding = $isMobile ? 'px-2.5 py-0.5' : 'px-3 py-1';
+
+    switch ($status) {
+        case 'won':
+        case 'win':
+        case 'settled':
+            return sprintf(
+                '<span class="%s uppercase font-black tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 %s rounded-md">Settled Match</span>',
+                $textSize, $padding
+            );
+        case 'lost':
+        case 'loss':
+        case 'failed':
+            return sprintf(
+                '<span class="%s uppercase font-black tracking-wider text-slate-500 bg-slate-950 border border-white/5 %s rounded-md">Balanced</span>',
+                $textSize, $padding
+            );
+        case 'cancelled':
+        case 'refunded':
+            return sprintf(
+                '<span class="%s uppercase font-black tracking-wider text-rose-400 bg-rose-500/10 border border-rose-500/20 %s rounded-md">Voided</span>',
+                $textSize, $padding
+            );
+        case 'pending':
+        case 'analyzing':
+        default:
+            return sprintf(
+                '<span class="%s uppercase font-black tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 %s rounded-md animate-pulse">Analyzing Nodes</span>',
+                $textSize, $padding
+            );
+    }
+}
+
 $pageTitle = 'Matrix Ledger Base';
 require_once __DIR__ . '/pages/header.php';
 ?>
@@ -128,16 +167,7 @@ require_once __DIR__ . '/pages/header.php';
 
                                 <!-- Status -->
                                 <td class="px-6 py-4 text-right">
-                                    <?php 
-                                        $status = strtolower($row['status'] ?? 'pending');
-                                        if ($status === 'settled' || $status === 'win') {
-                                            echo '<span class="text-[10px] uppercase font-black tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-md">Settled Match</span>';
-                                        } elseif ($status === 'failed' || $status === 'loss') {
-                                            echo '<span class="text-[10px] uppercase font-black tracking-wider text-slate-500 bg-slate-950 border border-white/5 px-3 py-1 rounded-md">Balanced</span>';
-                                        } else {
-                                            echo '<span class="text-[10px] uppercase font-black tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-md animate-pulse">Analyzing Nodes</span>';
-                                        }
-                                    ?>
+                                    <?php echo renderStatusBadge($row['status'] ?? 'pending', false); ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -154,16 +184,7 @@ require_once __DIR__ . '/pages/header.php';
                                 <?php echo htmlspecialchars($row['mode'] === 'real' ? 'Live Account' : 'Sandbox', ENT_QUOTES, 'UTF-8'); ?>
                             </span>
                             <div>
-                                <?php 
-                                    $status = strtolower($row['status'] ?? 'pending');
-                                    if ($status === 'settled' || $status === 'win') {
-                                        echo '<span class="text-[9px] uppercase font-black tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded">Settled Match</span>';
-                                    } elseif ($status === 'failed' || $status === 'loss') {
-                                        echo '<span class="text-[9px] uppercase font-black tracking-wider text-slate-500 bg-slate-950 border border-white/5 px-2.5 py-0.5 rounded">Balanced</span>';
-                                    } else {
-                                        echo '<span class="text-[9px] uppercase font-black tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded animate-pulse">Analyzing Nodes</span>';
-                                    }
-                                ?>
+                                <?php echo renderStatusBadge($row['status'] ?? 'pending', true); ?>
                             </div>
                         </div>
 

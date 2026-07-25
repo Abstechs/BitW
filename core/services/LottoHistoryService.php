@@ -23,8 +23,11 @@ class LottoHistoryService {
      * Retrieves the entire filtered history log for the current authenticated user context,
      * joining with lotto_draws to include winning numbers and release statuses.
      */
-    public function getLedgerEntries(string $filterMode): array {
+        public function getLedgerEntries(string $filterMode = 'all'): array {
         try {
+            // 1. Normalize the filter mode input
+            $modeFilter = strtolower(trim($filterMode));
+
             $query = "SELECT 
                         a.sequence, 
                         a.amount, 
@@ -34,17 +37,20 @@ class LottoHistoryService {
                         a.created_at,
                         d.lucky_number,
                         d.is_released
-                      FROM lotto_allocations a
-                      LEFT JOIN lotto_draws d 
-                          ON a.draw_date = d.draw_date 
-                          AND CHAR_LENGTH(a.sequence) = d.drawing_length
-                      WHERE a.user_id = :user_id";
+                    FROM lotto_allocations a
+                    LEFT JOIN lotto_draws d 
+                        ON a.draw_date = d.draw_date 
+                        AND CHAR_LENGTH(a.sequence) = d.drawing_length
+                    WHERE a.user_id = :user_id";
             
             $params = ['user_id' => $this->userId];
             
-            if ($filterMode !== 'all') {
-                $query .= " AND a.mode = :mode";
-                $params['mode'] = $filterMode;
+            // 2. Apply dynamic mode filtering
+            if ($modeFilter === 'real') {
+                $query .= " AND LOWER(a.mode) = 'real'";
+            } elseif ($modeFilter === 'demo' || $modeFilter === 'sandbox') {
+                // Accommodates either 'demo' or 'sandbox' saved in the DB
+                $query .= " AND LOWER(a.mode) IN ('demo', 'sandbox')";
             }
             
             $query .= " ORDER BY a.created_at DESC";

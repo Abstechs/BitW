@@ -45,6 +45,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <a class="admin-link<?= $currentPage === 'withdrawals.php' ? ' active' : '' ?>" href="withdrawals.php">Withdrawals</a>
             <a class="admin-link<?= $currentPage === 'transactions.php' ? ' active' : '' ?>" href="transactions.php">Transactions</a>
             <a class="admin-link<?= $currentPage === 'users.php' ? ' active' : '' ?>" href="users.php">Users</a>
+            <a class="admin-link<?= $currentPage === 'draws.php' ? ' active' : '' ?>" href="draws.php">Draw Management</a>
             <a class="admin-link<?= $currentPage === 'settings.php' ? ' active' : '' ?>" href="settings.php">Settings</a>
 <a class="admin-link<?= $currentPage === 'sovereign-settings.php' ? ' active' : '' ?>" href="sovereign-settings.php">Sovereign Engine</a>
 <a class="admin-link<?= $currentPage === 'blog-editor.php' ? ' active' : '' ?>" href="blog-editor.php">Oracle CMS (Blog)</a>

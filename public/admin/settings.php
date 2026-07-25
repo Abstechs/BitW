@@ -40,15 +40,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         // Persist AppSettings parameters into the database framework
-        AppSettings::set($pdo, 'PAYSTACK_SECRET', $paystackSecret);
-        AppSettings::set($pdo, 'PAYSTACK_PUBLIC', $paystackPublic);
-        AppSettings::set($pdo, 'MANUAL_DEPOSIT_ENABLED', (bool)$manualEnabled);
-        AppSettings::set($pdo, 'CRYPTO_DEPOSIT_ENABLED', (bool)$cryptoEnabled);
-        AppSettings::set($pdo, 'PAYSTACK_DEFAULT_ACCOUNT', $defaultAccount);
-        AppSettings::set($pdo, 'PAYSTACK_DEFAULT_BANK', $defaultBank);
-        AppSettings::set($pdo, 'PAYSTACK_DEFAULT_ACCOUNT_NAME', $defaultAccountName);
-        AppSettings::set($pdo, 'DEFAULT_PLAN_IMAGE', $defaultImage);
-        AppSettings::set($pdo, 'MIN_WITHDRAWAL_AMOUNT', $minWithdrawal);
+        AppSettings::set('PAYSTACK_SECRET', $paystackSecret);
+        AppSettings::set('PAYSTACK_PUBLIC', $paystackPublic);
+        AppSettings::set('MANUAL_DEPOSIT_ENABLED', (bool)$manualEnabled);
+        AppSettings::set('CRYPTO_DEPOSIT_ENABLED', (bool)$cryptoEnabled);
+        AppSettings::set('PAYSTACK_DEFAULT_ACCOUNT', $defaultAccount);
+        AppSettings::set('PAYSTACK_DEFAULT_BANK', $defaultBank);
+        AppSettings::set('PAYSTACK_DEFAULT_ACCOUNT_NAME', $defaultAccountName);
+        AppSettings::set('DEFAULT_PLAN_IMAGE', $defaultImage);
+        AppSettings::set('MIN_WITHDRAWAL_AMOUNT', $minWithdrawal);
 
         // Compile dashboard interface layout structural changes
         $newDashboardConfig = [

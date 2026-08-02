@@ -5,7 +5,7 @@ require_once __DIR__ . '/../core/config.php';
 require_once __DIR__ . '/../core/database.php';
 require_once __DIR__ . '/../core/auth.php';
 require_once __DIR__ . '/../core/settings.php';
-
+require_once __DIR__ . '/classes/AppSettings.php';
 if (!isLoggedIn()) {
     header('Location: login.php');
     exit;

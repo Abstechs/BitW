@@ -4,7 +4,7 @@ if (php_sapi_name() !== 'cli') {
     exit("Access Denied: This script can only be run via CLI.\n");
 }
 
-require_once __DIR__ . '/../includes/db.php'; // Adjust path to your PDO connection file
+require_once __DIR__ . '/../../core/database.php'; // Adjust path to your PDO connection file
 require_once __DIR__ . '/../src/LottoDrawEngineService.php';
 
 $drawDate = $argv[1] ?? date('Y-m-d');

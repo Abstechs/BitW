@@ -1,30 +1,64 @@
 <?php
 // public/manual-deposit.php
 session_start();
+
+// Enable error reporting during debugging (disable in production)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/../core/config.php';
 require_once __DIR__ . '/../core/database.php';
 require_once __DIR__ . '/../core/auth.php';
-require_once __DIR__ . '/../core/settings.php';
-require_once __DIR__ . '/classes/AppSettings.php';
-if (!isLoggedIn()) {
-    header('Location: login.php');
-    exit;
+
+// Prevent duplicate class loading exceptions
+if (file_exists(__DIR__ . '/classes/AppSettings.php')) {
+    require_once __DIR__ . '/classes/AppSettings.php';
+} elseif (file_exists(__DIR__ . '/../core/settings.php')) {
+    require_once __DIR__ . '/../core/settings.php';
 }
 
-// Global master kill-switch check from AppSettings
-AppSettings::load();
-if (!AppSettings::get('MANUAL_DEPOSIT_ENABLED')) {
-    header('Location: deposit.php');
-    exit;
+if (function_exists('isLoggedIn')) {
+    if (!isLoggedIn()) {
+        header('Location: login.php');
+        exit;
+    }
+} else {
+    // Fallback auth guard if auth.php uses $_SESSION['user_id']
+    if (empty($_SESSION['user_id'])) {
+        header('Location: login.php');
+        exit;
+    }
+}
+
+// Global master kill-switch check with safe truthy parsing
+if (class_exists('AppSettings')) {
+    if (method_exists('AppSettings', 'load')) {
+        AppSettings::load();
+    }
+    
+    $rawSetting = AppSettings::get('MANUAL_DEPOSIT_ENABLED', true);
+    // Explicitly validate string/bool conversions ("0", "false", false)
+    $isManualEnabled = filter_var($rawSetting, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    
+    if ($isManualEnabled === false) {
+        header('Location: deposit.php');
+        exit;
+    }
 }
 
 // Pull all active structural methods from the DB
-$methodStmt = $pdo->prepare("SELECT * FROM manual_methods WHERE status = 'active' ORDER BY id ASC");
-$methodStmt->execute();
-$methods = $methodStmt->fetchAll(PDO::FETCH_ASSOC);
+$methods = [];
+try {
+    $methodStmt = $pdo->prepare("SELECT * FROM manual_methods WHERE status = 'active' ORDER BY id ASC");
+    $methodStmt->execute();
+    $methods = $methodStmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $errors[] = "Failed to load payment methods: " . $e->getMessage();
+}
 
-$user_id = $_SESSION['user_id'];
-$errors = [];
+$user_id = $_SESSION['user_id'] ?? 0;
+$errors = $errors ?? [];
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -81,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Manual Deposit - ' . (AppConfig::get('APP_ALIAS') ?: 'BitW');
+$pageTitle = 'Manual Deposit - ' . (class_exists('AppConfig') ? (AppConfig::get('APP_ALIAS') ?: 'BitW') : 'BitW');
 require_once __DIR__ . '/pages/header.php';
 ?>
 
